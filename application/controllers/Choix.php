@@ -114,6 +114,19 @@ $data['cycles']=$this->Mentions->select_cycle();
 			$this->load->view('template/edition.php',$data);
 		} 
 
+	public function nouvelle_edition(){
+			//$data['mentions']=$this->Mentions->select();
+		$this->db->where(array('status'=> 'en cours'));
+        $data['annee']=$this->db->get('annee_academiques')->result();
+        $data1=$this->db->get('annee_academiques')->result();
+        $condition=array('annee_id'=> $data1[0]->id_annee);
+        $data['num_semaine']=$this->Mentions->select_semaine($condition);
+        $data['semestre']=$this->db->get('semestres')->result();
+        $data['cycles']=$this->Mentions->select_cycle();
+		$data['mentions']=$this->Mentions->select();
+			$this->load->view('template/nouvel_edit.php',$data);
+		} 
+
 	public function modification($sem,$niv){
 	//$id= $this->input->post('niv');
 		$id= $niv;

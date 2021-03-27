@@ -281,18 +281,18 @@
                                 <span style="color: white">OK</span>
                             </button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             <button type="submit" class="btn" id="pre" style=" background-color: green;">
-                                <span style="color: white">Precedent</span>
+                                <span style="color: white"><a class="bouton_precedent" href="">Precedent</a></span>
                             </button>&nbsp;
                             <button type="submit" class="btn" id="edit" style=" background-color: green;">
-                                <span style="color: white">Nouvel edttion</span>
+                                <span style="color: white"><a class="bouton_n_edit" href="">Nouvel edttion</a></span>
                             </button>&nbsp;
                                                        
             </div>
 
-            <div class="container col-sm-12  preced showback breadcrumbs" style="margin-top: 0px;">
+            <!--div class="container col-sm-12  preced showback breadcrumbs" style="margin-top: 0px;">
   
   
-            </div>
+            </div-->
 
              <div class=" col-sm-12  n_edit showback breadcrumbs" style=" margin-top: 0px;">
                                             
@@ -486,8 +486,23 @@
                                 <tr>
                                     <td class="" id="" colspan="2"> <p align="center">Periode: </p>
                                     </td>
-                                <tr>
-                                    <td class="" id="" colspan="2" >
+                                <tr> $debut="<?php 
+                  $j=0;
+              foreach ($num_semaine as $row) {
+                    //echo $row->nom_mention."</br>";
+                    $j++;
+                  }
+                  $i=0;
+                  foreach ($num_semaine as $row) {
+                    $i++;
+                    if ($j==$i) {
+                      echo $row->debut;
+                    }
+                  }
+                   
+                   ?>";
+    $id_mention="<?php  echo $this->session->id_mention;?>";
+    lspan="2" >
                                         <select class="form-control  periode" id="periode" style=" float: right; height: 35px;width: 200px">
                                             <option id=""></option>
                                         </select></td> 
@@ -535,9 +550,6 @@
 
               </div>
                 
-                <div class="container  modif" style="margin-top: 0px;">
-  
-                </div>
 
          
 
@@ -1052,6 +1064,25 @@
 
 
   <script type="text/javascript">
+
+        
+
+        $(document).ready(
+      function(){
+
+
+        $(".bouton_precedent").attr("href","<?php  echo base_url();?>Enregistrement/precedent/" + $("select.Niveau").children(".Niveau option:selected").attr('id'))
+
+        $(".Niveau").change(function(){
+
+          $(".bouton_precedent").attr("href","<?php  echo base_url();?>Enregistrement/precedent/" + $("select.Niveau").children(".Niveau option:selected").attr('id'))
+        });
+   
+
+      $(".bouton_n_edit").attr("href","<?php  echo base_url();?>choix/nouvelle_edition/" + $("select.Niveau").children(".Niveau option:selected").attr('id'))
+
+     
+});
 
     $debut="<?php 
                   $j=0;

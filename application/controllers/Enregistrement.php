@@ -221,8 +221,7 @@ public function notif(){
 		 $this->load->view('templates/edition',$data);
 	
 			}
-public function precedent(){
-	$id= $this->input->post('niv');
+public function precedent($id_niv){
 	$this->db->where(array('status'=> 'en cours'));
         $data['annee']=$this->db->get('annee_academiques')->result();
         $data1=$this->db->get('annee_academiques')->result();
@@ -231,8 +230,8 @@ public function precedent(){
         $data['semestre']=$this->db->get('semestres')->result();
         $data['cycles']=$this->Mentions->select_cycle();
 		$data['mentions']=$this->Mentions->select();
-		$data['n']=$id;
-		 $this->load->view('templates/precedent',$data);
+		$data['n']=$this->Emploi->select_niv(array('id_niv_par'=> $id_niv));
+		 $this->load->view('template/emplois_preced',$data);
 		}
 
 public function modification(){
