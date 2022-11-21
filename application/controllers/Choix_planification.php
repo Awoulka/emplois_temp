@@ -38,9 +38,28 @@ class Choix_planification extends CI_Controller {
 		$condition=array('ue_id'=> $id);
 		$data['ec']=$this->Planification->select_ec($condition);
 		$data1=$this->Planification->select_ec($condition);
-		$condition1=array('ec_id'=> $data1[0]->id_ec);
+		$condition1=array('ec_id'=> $data1[0]->id_ec,'status'=>"en cours");
 		$data['enseignant']=$this->Planification->select_enseignant($condition1);
 		$condition1=array('ec_id'=> $data1[0]->id_ec,'status'=>"en cours",'semaine_status'=>4);
+		$data1=$this->Planification->evolution_max($condition1);
+		if ( is_null($data1[0]->evolution)) {
+			$data['evolution']=0;
+		}
+		else{
+			$data['evolution']=$data1[0]->evolution;
+		}
+		//print_r($data) ;
+		echo json_encode($data);
+	}
+
+	public function ch1_td(){
+		$id= $this->input->post('UE');
+		$condition=array('ue_id'=> $id);
+		$data['ec']=$this->Planification->select_ec($condition);
+		$data1=$this->Planification->select_ec($condition);
+		$condition1=array('ec_id'=> $this->input->post('EC'),'status'=>"en cours");
+		$data['enseignant']=$this->Planification->select_enseignant($condition1);
+		$condition1=array('ec_id'=> $this->input->post('EC'),'status'=>"en cours",'semaine_status'=>4);
 		$data1=$this->Planification->evolution_max($condition1);
 		if ( is_null($data1[0]->evolution)) {
 			$data['evolution']=0;
@@ -65,7 +84,7 @@ class Choix_planification extends CI_Controller {
 			$data['evolution']=$data1[0]->evolution;
 		}
 		
-		$condition=array('ec_id'=>$id);
+		$condition=array('ec_id'=>$id,'status'=>"en cours");
 		$data['enseignant']=$this->Planification->select_enseignant($condition);
 		//print_r($data) ;
 		echo json_encode($data);	

@@ -63,9 +63,9 @@
                             $d=$d[8].$d[9];
                           }
                           else{
-                                $d=$d[8]+$d[9]+" "+$mois[(int)$d[5]+(int)$d[6]];
+                                $d=$d[8]+$d[9]." ".$mois[(int)($d[5].$d[6])];
                               }
-                          $f=$f[8].$f[9]." ".$mois[(int)$f[5]+(int)$f[6]];
+                          $f=$f[8].$f[9]." ".$mois[(int)($f[5].$f[6])];
 
                           //alert(d+" au "+$f);
              echo "du ".$d." au ".$f;
@@ -101,7 +101,7 @@
 
             ?>
           </table>
-                  <table border="1" cellpadding="0px"  class="" style="table-layout:fixed; width: 100% ; height: 10%; border-collapse: collapse;" id="table" align="center">
+                  <table border="1" cellpadding="0px"  class="" style="table-layout: auto; width: 100% ;  border-collapse: collapse;" id="table" align="center">
                     
               <?php
           function  recherche($tab,$id)
@@ -117,7 +117,11 @@
                 $tab1=[0];
                 $f=0;
                 $ff=1;
+                /*echo "<pre>";
+                            print_r($planifications);
+                            echo "</pre>";*/
                 foreach ($jour as $key) {
+                  
                   if ($ff==$key->num_jour) {
                    $tab1[$f]=$key->intitule_jour;
                  $f++;
@@ -128,17 +132,30 @@
                 
                  $plag=[0];
                
-                 foreach ($jour as$value) {
+                 foreach ($jour as $value) {
                     $f=0;
                     $chevaussement=1;
+
+                            /*echo "<pre>";
+                            print_r($planifications);
+                            echo "</pre>";*/
                  foreach ($planifications as $row) {
-                          if ($row->jour_id==$value->id_jour ) {
+                            
+                          if ( $row->jour_id==$value->id_jour && ($row->type_planing != "BIBLIOTHEQUE" && $row->type_planing != "Congé" && $row->type_planing != "INVEST_HUMAIN")&&  ((int)$row->ens_prog == 0 || (int)$row->ens_prog == (int)$row->id_personnel )) {
 
-                     $plag[$f]=[($row->plages[0]->heure_debut[0].$row->plages[0]->heure_debut[1]),($row->plages[0]->heure_fin[0].$row->plages[0]->heure_fin[1])];
-                             $f++;    
+                            
+
+                     $plag[$f]=[($row->plages[0]->heure_debut[0].$row->plages[0]->heure_debut[1]),($row->plages[0]->heure_fin[0].$row->plages[0]->heure_fin[1]),$row->ec];
+                             $f++;  
+                            
                             }
-
+                            // echo "<pre>";
+                            //  print_r($row);
+                            //  echo "</pre>";
                              }
+                            //  echo "<pre>";
+                            //  print_r($plag);
+                            //  echo "</pre>";
                         for ($i=0; $i <count($plag) ; $i++) {
                            for ($j=1; $j <count($plag); $j++) { 
                               if ( $plag[$i][0]>$plag[$j][0]) {
@@ -155,7 +172,7 @@
                                 $chevaussement+=1;
                               }
                           }
-                            
+                         // echo $chevaussement;
                            $value->c =$chevaussement;
                             $plag=[0];
                           }
@@ -170,21 +187,33 @@
                  if ($i==$value->num_jour) {
                  
                 
-                echo "<tr id='".$value->id_jour."'><th rowspan='".$value->c."' style='height: 5%; width: 7%' width='100px''><center><b>".$value->intitule_jour."</b></center></th>";
+                echo "<tr id='".$value->id_jour."'><th rowspan='".$value->c."' style='height: 15%; width: 7%' width='100px''><center><b>".$value->intitule_jour."</b></center></th>";
                       
                      for ($j=1; $j <=($heure_fin-$heure_debut) ; $j++) {
                      $trouve=0; 
                      $plage=0;
                      $salle_id=0;
-                        foreach ($planifications as $row) {
+                        /*echo "<pre>".$min_jour.'--'.$row->plages[0]->duree.'--';
+                            print_r($row->plages[0]->heure_debut[0].$row->plages[0]->heure_debut[1]);
 
-                          if ($row->jour_id==$value->id_jour && $plage!=$row->plages[0]->id_plage && $salle_id!=$row->salle_id && ($row->plages[0]->heure_debut[0].$row->plages[0]->heure_debut[1])==$min_jour && recherche($id_planification,$row->id_plannification)) {
+                            echo "</pre>";*/
+                        foreach ($planifications as $row) {
+                              
+                                 
+                          
+                          if ( ($row->type_planing != "BIBLIOTHEQUE" && $row->type_planing != "Congé" && $row->type_planing != "INVEST_HUMAIN") 
+                                && $row->jour_id==$value->id_jour && $plage!=$row->plages[0]->id_plage && $salle_id!=$row->salle_id 
+                                && ((int)$row->plages[0]->heure_debut[0].$row->plages[0]->heure_debut[1])==$min_jour && recherche($id_planification,$row->id_plannification) &&  ((int)$row->ens_prog == 0 || (int)$row->ens_prog == (int)$row->id_personnel ) ) 
+                          {
+                            /*echo "<pre>";
+                            print_r($row->plages[0]->heure_debut[0].$row->plages[0]->heure_debut[1]);
+                            echo "</pre>";*/
                              $trouve=1;
                              $id_planification[$p]=$row->id_plannification;
                              $p+=1;
-                            echo "<td align='center' colspan='".$row->plages[0]->duree."'><font size='1'><b>".$row->ec[0]->intitule_ec."<br>".$row->evolution."/".$row->ec[0]->heure."<br>".$row->salle."</b></font></td>";
+                            echo "<td align='center' colspan='".$row->plages[0]->duree."'><font size='1'>".$row->ec[0]->intitule_ec."<br>".$row->evolution."/".$row->ec[0]->heure."<br>"."<b>".$row->niv."</b>"."<br>".$row->salle."</font></td>";
                             $j+=(int)$row->plages[0]->duree-1;
-                            $min_jour+=$j;
+                            $min_jour+=(int)$row->plages[0]->duree;
                             $plage=$row->plages[0]->id_plage;
                             $salle_id=$row->salle_id;
                              
@@ -208,14 +237,16 @@
                                     $plage=0;
                                     $salle_id=0;
                         foreach ($planifications as $row) {
-                           if ( $row->jour_id==$value->id_jour && $plage!=$row->plages[0]->id_plage && $salle_id!=$row->salle_id && ($row->plages[0]->heure_debut[0].$row->plages[0]->heure_debut[1])==$min_jour && recherche($id_planification,$row->id_plannification) ){
+                           if ( ($row->type_planing != "BIBLIOTHEQUE" && $row->type_planing != "Congé" && $row->type_planing != "INVEST_HUMAIN") 
+                                && $row->jour_id==$value->id_jour && $plage!=$row->plages[0]->id_plage && $salle_id!=$row->salle_id 
+                                && ((int)$row->plages[0]->heure_debut[0].$row->plages[0]->heure_debut[1])==$min_jour && recherche($id_planification,$row->id_plannification) &&  ((int)$row->ens_prog == 0 || (int)$row->ens_prog == (int)$row->id_personnel ) ){
 
                              $trouve=1;
                               $id_planification[$p]=$row->id_plannification;
                              $p+=1;
-                            echo "<td colspan='".$row->plages[0]->duree."' align='center'><font size='1'><b>".$row->ec[0]->intitule_ec."<br>".$row->evolution."/".$row->ec[0]->heure."<br>".$row->salle."</b></font></td>";
+                            echo "<td colspan='".$row->plages[0]->duree."' align='center'><font size='1'>".$row->ec[0]->intitule_ec."<br>".$row->evolution."/".$row->ec[0]->heure."<br>"."<b>".$row->niv."</b>"."<br>".$row->salle."</font></td>";
                             $j+=(int)$row->plages[0]->duree-1;
-                             $min_jour+=$j;
+                             $min_jour+=(int)$row->plages[0]->duree;
                             $plage=$row->plages[0]->id_plage;
                             $salle_id=$row->salle_id;
                              
@@ -232,7 +263,11 @@
                         
                echo "</tr>";
               }
+
+              //die();
             }}
+
+
           }
           
         ?>

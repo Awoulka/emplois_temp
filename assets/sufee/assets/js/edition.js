@@ -1,807 +1,10 @@
 
-     var tableau_id_= new Array(4);
-              tableau_id_[1]= new Array(7);
-              tableau_id_[2]= new Array(7);
-              tableau_id_[3]= new Array(7);
-              tableau_id_[4]= new Array(7);
-              tableau_id_[5]= new Array(7);
-              tableau_id_[6]= new Array(7);
-
-
-var tableau_valeurs_= new Array(4);
-              tableau_valeurs_[1]= new Array(7);
-
-              tableau_valeurs_[2]= new Array(7);
-              tableau_valeurs_[3]= new Array(7);
-              tableau_valeurs_[4]= new Array(7);
-              tableau_valeurs_[5]= new Array(7);
-              tableau_valeurs_[6]= new Array(7);
-var tableau_nbh=[];
- var tableau_nbh_=[];
-var tableau_d=[];
-var tableau_d_=[];
-var tableau_s=[];
-
-
-
-              //tableau_d[0]= ["cour",8,11];
-              //tableau_d[1]= ["pause",11,13];
-              //tableau_d[2]= ["cour",13,14];
-              //tableau_d[3]= ["pause",14,17];
-              //tableau_d[4]= ["cour",14,17];
-var tableau_id_plage= [];
-var tableau_id_jour= [];
-var tableau_semaine= new Array(4);  
-              
-              
-              //tableau_d[4]= [];
-              //tableau_d[5]= [];
-
-
-var celulle;
-var nivv;
-
-for (var i = 1; i <7 ; i++) {
-                     //alert("i="+i);
-                     for (var j = 1; j <= 50 ; j++) {
-                     
-
-                           
-                        tableau_id_[i][j]=-1;
-                      
-                      
-                     }
-                   }
-
-function notif(){
-
-  $('tbody.tableau1').empty();
-          $.post(
-                                      // chargement des emplois du temps des niv_par
-                                        base_url + "Enregistrement/niv",
-                                       
-                            { id_niv : $("select.Niveau").children(".Niveau option:selected").attr('id')},
-                            function(data){
-                             
-
-                             $('tbody.tableau1').empty();
-                              for (var i = 0; data.length - 1 >= i; i++) {
-                                      if (data[i][0]!=null && (data[i][0].semaine_status==0 || data[i][0].semaine_status==1 || data[i][0].semaine_status==2 || data[i][0].semaine_status==3 )) {
-
-                                        if (data[i][0].semaine_status==0 ) {
-
-                                      $('tbody.tableau1').append("<tr role='row' class='odd' id="+ data[i][0].id_semaine +"><td class='sorting_1'>"+ data[i][0].numero +"</td><td> du  "+ data[i][0].debut + "   au  "+ data[i][0].fin + " (Non Envoyé)</td><td><a href='#' target='_blank' class= 'fa fa-file emploi' id=f"+ data[i][0].id_semaine +">Visualiser</a>&nbsp;&nbsp;<button  type='submit' class='btn fa fa-file emploi envoyer' id="+data[i][0].id_semaine+" style='background-color: green;'><span style='color:white'>Envoyer</span></button>&nbsp;&nbsp;&nbsp;&nbsp;<button  type='submit' class='btn fa fa-file emploi renvoyer' id="+ data[i][0].id_semaine +" style='background-color: red;'><span style='color:white'>Supprimer</span></button><button class='item' data-toggle='tooltip' data-placement='top' title='' data-original-title='Send'><i class='zmdi zmdi-mail-send'></i></button>&nbsp;&nbsp;&nbsp;&nbsp;<button  type='submit' class='btn fa fa-file emploi ' id="+ data[i][0].id_semaine +" style='background-color: red;'><span style='color:white'><a href='"+base_url+"choix/modification/"+data[i][0].id_semaine+"/"+nivv+"' >Modifier</a></span></button></td></tr></td></tr>");
-                                      $("#f"+ data[i][0].id_semaine).prop("href",base_url + "imprimer/index/"+data[i][0].id_semaine+"/"+$("select.Niveau").children(".Niveau option:selected").attr('id'));
-
-                                      
-                                    }
-                                     if (data[i][0].semaine_status==1 ) {
-                                      $('tbody.tableau1').append("<tr role='row' class='odd' id="+ data[i][0].id_semaine +"><td class='sorting_1'>"+ data[i][0].numero +"</td><td> du  "+ data[i][0].debut + "   au  "+ data[i][0].fin + " (En attente de validation par le CD)</td><td><a href='#' target='_blank' class= 'fa fa-file emploi' id=f"+ data[i][0].id_semaine +">Visualiser</a>&nbsp;&nbsp;<a href='#' target='_blank' class= 'fa fa-file emploi' id=f"+ data[i][0].id_semaine +"></a>&nbsp;&nbsp;&nbsp;&nbsp;<button  type='submit' class='btn fa fa-file emploi renvoyer' id="+ data[i][0].id_semaine +" style='background-color: red;'><span style='color:white'>Supprimer</span></button></td></tr>");
-                                      $("#f"+ data[i][0].id_semaine).prop("href",base_url + "imprimer/index/"+data[i][0].id_semaine+"/"+$("select.Niveau").children(".Niveau option:selected").attr('id'));
-                                    }
-
-                                    if (data[i][0].semaine_status==2 ) {
-                                      $('tbody.tableau1').append("<tr role='row' class='odd' id="+ data[i][0].id_semaine +"><td class='sorting_1'>"+ data[i][0].numero +"</td><td> du  "+ data[i][0].debut + "   au  "+ data[i][0].fin + " (Rejeté par le CD)</td><td><a href='#' target='_blank' class= 'fa fa-file emploi' id=f"+ data[i][0].id_semaine +">Visualiser</a>&nbsp;&nbsp;&nbsp;&nbsp;<button  type='submit' class='btn fa fa-file emploi renvoyer' id="+ data[i][0].id_semaine +" style='background-color: red;'><span style='color:white'>Supprimer</span></button></td></tr>");
-                                      $("#f"+ data[i][0].id_semaine).prop("href",base_url + "imprimer/index/"+data[i][0].id_semaine+"/"+$("select.Niveau").children(".Niveau option:selected").attr('id'));
-
-                                      
-                                    }
-                                     
-
-                                     if (data[i][0].semaine_status==3 ) {
-                                      $('tbody.tableau1').append("<tr role='row' class='odd' id="+ data[i][0].id_semaine +"><td class='sorting_1'>"+ data[i][0].numero +"</td><td> du  "+ data[i][0].debut + "   au  "+ data[i][0].fin + " (Validé mais non Publié)</td><td><a href='#' target='_blank' class= 'fa fa-file emploi' id=f"+ data[i][0].id_semaine +">Visualiser</a>&nbsp;&nbsp;<button  type='submit' class='btn fa fa-file emploi publier' id="+ data[i][0].id_semaine +" style='background-color: green;'><span style='color:white'>Publier</span></button>&nbsp;&nbsp;&nbsp;&nbsp;<button  type='submit' class='btn fa fa-file emploi renvoyer' id="+ data[i][0].id_semaine +" style='background-color: red;'><span style='color:white'>Supprimer</span></button></td></tr>");
-                                      $("#f"+ data[i][0].id_semaine).prop("href",base_url + "imprimer/index/"+data[i][0].id_semaine+"/"+$("select.Niveau").children(".Niveau option:selected").attr('id'));
-                                    }
-
-                                    }
-                                  }
-
-
-                              $('.envoyer').click(function(){
-
-                                 swal({
-
-                                        title:"",
-                                        text:"Emploi du temps pret à être envoyer. Confirmez-vous l'envoi ?",
-                                        icon:"warning",
-                                        buttons:['Non','Oui'],
-                                        dangerMode:false
-                                      
-                                    }).then((oui)=>{
-                                      if (oui) {
-
-                                        $.post(
-                                      // chargement des emplois du temps des niv_par
-                                        base_url + "Enregistrement/status_semaine/1",
-                                       
-                                            { semaine : $(this).attr('id')},
-                                            function(data){
-                                             
-                                                 swal('','Emploi du temps envoyé avec success','success');
-                                                notif();
-                                          },
-                                          "text"
-                                    );
-
-
-                                        
-                                      }
-                                      else{
-
-                                        }
-                    });
-
-                              });
-
-                                $('.renvoyer').click(function(){
-
-                                   swal({
-
-                                        title:"",
-                                        text:"Confirmez-vous la suppression de cet emploi du temps ?",
-                                        icon:"warning",
-                                        buttons:['Non','Oui'],
-                                        dangerMode:false
-                                      
-                                    }).then((oui)=>{
-                                      if (oui) {
-
-                                        $.post(
-                                      // chargement des emplois du temps des niv_par
-                                        base_url + "Enregistrement/supprimer_emploi",
-                                       
-                                            { semaine : $(this).attr('id')},
-                                            function(data){
-                                             
-                                                 swal('','suppression reussi','success');
-                                                notif();
-                                          },
-                                          "text"
-                                    );
-
-
-                                        
-                                      }
-                                      else{
-
-                                        }
-                    });
-                                 
-                              });
-
-
-                              $('.publier').click(function(){
-
-                                 swal({
-
-                                        title:"",
-                                        text:"Emploi du temps pret a être Publié. Confirmez-vous la publication ?",
-                                        icon:"warning",
-                                        buttons:['Non','Oui'],
-                                        dangerMode:false
-                                      
-                                    }).then((oui)=>{
-                                      if (oui) {
-
-                                        $.post(
-                                      // chargement des emplois du temps des niv_par
-                                        base_url + "Enregistrement/status_semaine/4",
-                                       
-                                            { semaine : $(this).attr('id')},
-                                            function(data){
-                                             
-                                                 swal('','Emploi du temps Publié avec success','success');
-                                                  notif();
-                                          },
-                                          "text"
-                                    );
-
-
-                                        
-                                      }
-                                      else{
-
-                                        }
-                    });
-
-                              });
-                   
-
-                   $('.modifier').click(function(){
-
-
-                                        $(".n_edit").empty();
-
-                                            $.ajax({
-
-                                                        
-                                                        url: base_url + "choix/modification" ,
-                                                        type: "POST",
-                                                        //async: false,
-
-                                                        data : {id:$(this).attr("id")},
-                                                        dataType: "text",
-                                                        success: function(data){
-
-                                                          //alert(data);
-                                                          $(".n_edit").html(data);
-                                                        },
-                                                        error:function(){
-                                                          alert("erreur de requetes ");
-                                                        }
-                                                      });
-
-
-
-                              });
-                              $('.publier').click(function(){
-
-                                      swal({
-
-                                            title:"",
-                                            text:"Vous etes sur le point de modifier cet emplois du temps. Voulez-vous continuer ?",
-                                            icon:"warning",
-                                            buttons:['Non','Oui'],
-                                            dangerMode:false
-                                          
-                                        }).then((oui)=>{
-                                          if (oui) {
-
-                                            $.post(
-                                          // chargement des emplois du temps des niv_par
-                                            base_url + "Enregistrement/status_semaine/4",
-                                            
-                                                { semaine : $(this).attr('id')},
-                                                function(data){
-                                                  
-                                                      swal('','Emploi du temps Publié avec success','success');
-                                                      notif();
-                                              },
-                                              "text"
-                                        );
-
-
-                                            
-                                          }
-                                          else{
-
-                                            }
-                                      });
-
-                                      });     
-                          },
-                          "json"
-                    );
    
 
-
-}
-function evolution(tableau,matiere){
-       ev=0;
-       v=0;
-      
-              $.ajax({
-
-                  
-                  url:base_url + "Choix_planification/evolution",
-                  type: "POST",
-                  async: false,
-
-                  data : {EC : matiere},
-                  dataType: "json",
-                  success:function(data){
-
-                               //alert(data+"aaa");
-
-                                          if (data[0].evolution!=null ) {
-                                                ev=parseInt(data[0].evolution,10);
-                                              }
-                                           else{
-                                                ev=0;
-                                                }
-                           },
-                  error:function(){
-                    alert("erreur de serveur ;(");
-                  }
-                });
-    for (var i = 1; i <7 ; i++) {
-                          
-                     for (var j = 1; j < tableau_nbh.length ; j++) {
-                      
-                      
-                      if ((tableau[i][j] !=null && tableau[i][j][3]==matiere)  && tableau[i][j][4]!=0 ) {
-                       
-                            
-                                  
-                                   
-                                   tableau_id_[i][j][4]=ev+parseInt(tableau_nbh[j][0]+tableau_nbh[j][1])
-                                   tableau_valeurs_[i][j][4]=ev+parseInt(tableau_nbh[j][0]+tableau_nbh[j][1])
-                                   ev=ev+parseInt(tableau_nbh[j][0]+tableau_nbh[j][1]); 
-                                   if (tableau_valeurs_[i][j][9]!=null) { 
-                                    Remplir(tableau_valeurs_,i,j,"p"+i+j);
-                                  }
-                                    
-                   }
-                   }
-        }
-}
-
-    function creer_tableau_(tableau,tableau_entete,tableau_emploie){
-  
-  var tableau_jour=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
-
-       celulle="<tr><th style='' width='100px'></th>";
-
-                                  for (var i = 0; i < tableau.length ; i++) {
-
-                                          if(tableau[i][0]=="cour"){
-
-                      
-                                            if((tableau[i+1]!=null && tableau[i+1][0]=="pause") || tableau[i+1]==null){
-
-                                               celulle+="<td>"+tableau[i][1][0]+tableau[i][1][1]+"h<div align='right' style='float: right;'>"+tableau[i][2][0]+tableau[i][2][1]+"h</div></td>";
-                                    //            alert(tableau_d[i][1][0]+tableau_d[i][1][1]);
-
-                                            }
-                                          else{
-                                                 celulle+="<td>"+tableau[i][1][0]+tableau[i][1][1]+"h</td>";
-                                      //          alert(tableau_d[i][1][0]+tableau_d[i][1][1]);
-
-                                          }
-                                        }
-                                          else{
-                                            celulle+="<td width='40px'></td>";
-                                            
-                                          }
-
-                                  };
-                                  celulle+="</tr>";
-
-                                  $("#"+tableau_entete).html(celulle);
-
-                                  
-
-                                  
-
-                                   celulle="";
-                                   
-                                  for (var i = 0; i < 6 ; i++) {
-
-
-                                     celulle+="<tr style='table-layout: fixed; border: 0.1em solid '><th style='border-top: 1px solid black' width='100px'><center>"+tableau_jour[i]+"</center></th>";
-                                        for (var j = 0; j < tableau.length ; j++) {
-                                            
-                                          if (i==0) {
-                                            if(tableau[j][0]=="cour"){
-                                            celulle+="<td class='td' style='table-layout: fixed; border: 0.1em solid ' id=pp"+(i+1)+(j+1)+"></td>";
-                                              }
-                                            else{
-                                              
-                                              celulle+="<td style='table-layout: fixed; border: 0.1em solid ' rowspan='6' width='40px'></td>";
-                                            }
-                                          }
-                                          else{
-
-                                            if (tableau[j][0]!="pause") {                                            
-                                            
-
-                                                celulle+="<td class='td' style='table-layout: fixed; border: 0.1em solid '  id=pp"+(i+1)+(j+1)+"></td>";
-                                            
-
-                                          }
-                                            
-                                          }
-
-                                          
-                                      }
-                                      celulle+="</tr>";
-
-
-                                  $("#"+tableau_emploie).html(celulle);
-
-
-                                  };
-                            $("#"+tableau_entete).fadeIn(1000);
-                             $("#"+tableau_emploie).fadeIn(1000);
-};
-
-
-
-
-function creer_tableau(tableau,tableau_entete,tableau_emploie){
-  
-  var tableau_jour=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
-
-       celulle="<tr><th style='' width='100px'></th>";
-
-                                  for (var i = 0; i < tableau.length ; i++) {
-
-                                          if(tableau[i][0]=="cour"){
-
-                      
-                                            if((tableau[i+1]!=null && tableau[i+1][0]=="pause") || tableau[i+1]==null){
-
-                                               celulle+="<td>"+tableau[i][1][0]+tableau[i][1][1]+"h<div align='right' style='float: right;'>"+tableau[i][2][0]+tableau[i][2][1]+"h</div></td>";
-                                    //            alert(tableau_d[i][1][0]+tableau_d[i][1][1]);
-
-                                            }
-                                          else{
-                                                 celulle+="<td>"+tableau[i][1][0]+tableau[i][1][1]+"h</td>";
-                                      //          alert(tableau_d[i][1][0]+tableau_d[i][1][1]);
-
-                                          }
-                                        }
-                                          else{
-                                            celulle+="<td width='40px'></td>";
-                                            
-                                          }
-
-                                  };
-                                  celulle+="</tr>";
-
-                                  $("#"+tableau_entete).html(celulle);
-
-                                  
-
-                                  
-
-                                   celulle="";
-                                   
-                                  for (var i = 0; i < 6 ; i++) {
-
-
-                                     celulle+="<tr style='table-layout: fixed; border: 0.1em solid '><th style='border-top: 1px solid black' width='100px'><center>"+tableau_jour[i]+"</center></th>";
-                                        for (var j = 0; j < tableau.length ; j++) {
-                                            
-                                          if (i==0) {
-                                            if(tableau[j][0]=="cour"){
-                                            celulle+="<td class='td' style='table-layout: fixed; border: 0.1em solid ' id=p"+(i+1)+(j+1)+"></td>";
-                                              }
-                                            else{
-                                              
-                                              celulle+="<td style='table-layout: fixed; border: 0.1em solid ' rowspan='6' width='40px'></td>";
-                                            }
-                                          }
-                                          else{
-
-                                            if (tableau[j][0]!="pause") {                                            
-                                            
-
-                                                celulle+="<td class='td' style='table-layout: fixed; border: 0.1em solid '  id=p"+(i+1)+(j+1)+"></td>";
-                                            
-
-                                          }
-                                            
-                                          }
-
-                                          
-                                      }
-                                      celulle+="</tr>";
-
-
-                                  $("#"+tableau_emploie).html(celulle);
-
-
-                                  };
-                            $("#"+tableau_entete).fadeIn(1000);
-                             $("#"+tableau_emploie).fadeIn(1000);
-
-            $("td.td").click(function(){
-
-                aaa=$(this).attr('id');
-                index=$(this).attr('id');
-                nbh=tableau_nbh[aaa[2]];
-                //alert(nbh);
-                  
-                 $(".Enseignant option").remove();
-                   $(".EC option").remove();
-                    $("input[name=optradio]").removeAttr('checked'); 
-                    $(".Salle option").remove();
-                    
-                                                      //$("select.Semestres").children(".Semestres option[id="+tableau_valeurs_[aaa[1]][aaa[2]][10]+"]").attr("selected","selected");
-                                                     
-                $.post(
-                          base_url + "Choix_planification/ch",
-                          { PN : nivv,
-                            Semestre : $("select.Semestres").children(".Semestres option:selected").attr('id')},
-                          function(data){
-                                                 //alert(data);
-                                          $(".UE option").remove();
-
-                                          $("select.UE").append("<option id='nul'></option>");
-                                           
-                                          for (var i = 0; data.ue.length - 1 >= i; i++) {
-                                               $("select.UE").append("<option id="+data.ue[i].id_ue+">"+ data.ue[i].intitule_ue+"</option>");
-                                             }
-                                          for (var i = 0; data.salle.length - 1 >= i; i++) {
-                                               $("select.Salle").append(
-                                                                          "<option id="+data.salle[i].id_salle+">"+data.salle[i].nom_salle+"("+data.salle[i].intitule_salle+")</option>"
-                                                                          );
-                                           }
-
-                                           if (tableau_valeurs_[aaa[1]][aaa[2]][0]!=null) {
-                                            
-
-                                                      $("select.UE").children(".UE option[id="+tableau_id_[aaa[1]][aaa[2]][5]+"]").attr("selected","selected");
-                                                      
-            $.post(
-                                    base_url + "Choix_planification/ch1",
-                                    { UE : $("select.UE").children(".UE option:selected").attr('id')},
-                                    function(data){
-                                      //alert(aaa[1]);
-                                           $(".EC option").remove();
-                                           for (var i = 0; data.ec.length - 1 >= i; i++) {
-                                               $("select.EC").append("<option id="+data.ec[i].id_ec+">"+data.ec[i].code_ec+"("+data.ec[i].intitule_ec+")"+"</option>");
-                                              }
-
-                                              $("select.EC").children(".EC option[id="+tableau_id_[aaa[1]][aaa[2]][3]+"]").attr("selected","selected");      
-                                           
-                                           
-                         },
-                        "json"
-            );
-
-
-                                                  //$("select.EC").append("<option id="+tableau_id[aaa[1]][aaa[2]][3]+">"+tableau_valeurs[aaa[1]][aaa[2]][3]+"</option>");
-
-                                                  
-
-                                              
-                                                       
-                                                       $("select.Enseignant").append("<option id=>"+tableau_valeurs_[aaa[1]][aaa[2]][5]+"</option>");
-                                                       
-                                          if (tableau_valeurs_[aaa[1]][aaa[2]][6]!=tableau_valeurs_[aaa[1]][aaa[2]][5]) {
-
-                                                    $("select.Enseignant").append("<option id=>"+tableau_valeurs_[aaa[1]][aaa[2]][6]+"</option>");
-                                                  }
-
-                                                   $("select.heure").append("<option id=>"+tableau_valeurs_[aaa[1]][aaa[2]][7]+"</option>");
-
-                                                   $("select.Salle").children(".Salle option[id="+tableau_id_[aaa[1]][aaa[2]][2]+"]").attr("selected","selected");
-
-                                                            //alert("aaaaa");
-                                                            $(".evolution option").remove();
-                                                              d=parseInt(tableau_id_[aaa[1]][aaa[2]][4],10)-parseInt(nbh[0]+nbh[1]);
-                                                              if (d<0) {d=0;}
-                                                                //alert(parseInt(nbh[0]+nbh[1]));
-                                                            
-                                                                $("select.evolution").append("<option>"+d+"</option>");
-                                                  /*$(".evolution option").remove();
-                                                  $("select.evolution").append("<option>"+tableau_id[aaa[1]][aaa[2]][4]+"</option>");*/
-                                             
-                                                       
-                                                        
-                                              
-                                             
-
-                                                   
-                                          }
-
-                                          
-
-
-                       
-                         },
-                        "json"
-                );
-              
-                   
-
-                if (tableau_valeurs_[aaa[1]][aaa[2]]!=null) {
-                      
-                         $("input[name=optradio][value="+tableau_valeurs_[aaa[1]][aaa[2]][9]+"]").trigger('click');
-                        
-              }
-               else{
-                //$("select.UE").append("<option id='nul'></option>");
-               }
-                  $(".evolution option").remove();
-                  $(".heure option").remove();
-        
-                                      $(".choix").css("display","block");
-                                      $("td.td").css("background-color","white");
-                                      $(this).css("background-color","#b3d9ff");
-                                     
-          
-         });
-
-}
-
-
-    function Remplir(tableau,ligne,colonne,index0){
-
-
-                                if (tableau[ligne][colonne][9]=="BIBLIOTHEQUE" || 
-                                    tableau[ligne][colonne][9]=="Congé" || 
-                                    tableau[ligne][colonne][9]=="INVESTISSEMENT HUMAIN") {
-                                            $("#"+index0).html("<center>"+"<font size=5 >"+tableau[ligne][colonne][9]+"</font>"+"</center>");
-                                          }
-                                else{ 
-                                            if (tableau[ligne][colonne][6]!='' && tableau[ligne][colonne][6]!=tableau[ligne][colonne][5] ) {
-                                                ens2=" / "+tableau[ligne][colonne][6];
-                                            }
-                                            else{
-                                              ens2="";
-
-                                            }
-
-                                              if (tableau[ligne][colonne][9]=="Cour") {
-
-                                                $("#"+index0).html("<center>"
-                                                  +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
-                                                  +"</div>"+
-                                                 "<div >"+"<font size=2>"+tableau[ligne][colonne][5]+ens2+"</font>"
-                                                 +"</div>"
-                                                 +"<div style='float: left;'>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+"<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
-                                                +"</center>");
-                                                //alert(index0);
-                                              }
-
-                                              else{
-                                                if (tableau[ligne][colonne][9]=="TP"      || 
-                                                    tableau[ligne][colonne][9]=="TPE"     ||
-                                                    tableau[ligne][colonne][9]=="TD"      || 
-                                                    tableau[ligne][colonne][9]=="CC"      
-                                                      ) {
-                                                $("#"+index0).html("<center>"
-                                                  +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
-                                                  +"</div>"+
-                                                 "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
-                                                 +"</div>"
-                                                +"<div style='float: left;''>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+"<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
-                                                +"</center>");
-                                                }
-
-                                                else{
-                                                  $("#"+index0).html("<center>"
-                                                  +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
-                                                  +"</div>"+
-                                                 "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
-                                                 +"</div>"
-                                                 +"<div >"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"
-                                                +"</center>");
-
-                                                }
-
-
-                                              }
-                                            
-                                          }
-
-                                        
-        }; 
     $(document).ready(
       function(){
 
- $("#sortir,#close,#close0").click(function(){
-          $(".choix").css("display","none");
-          $(".choix_dt").css("display","none");
-          $("select.EC,select.UE,select.Enseignant").css("border-color","white");
-           $(".radio").css("border","none");
-      });
-
-notif();
-function ajax(url,fonction){
-
-        $.ajax({
-
-                  
-                  url: base_url + url ,
-                  type: "POST",
-                  async: false,
-
-                  data : {niv: $("select.Niveau").children(".Niveau option:selected").attr('id')},
-                  dataType: "json",
-                  success:fonction,
-                  error:function(){
-                    alert("erreur de serveur ;(");
-                  }
-                });
-
-};
-
-
-function table(data){
-  
-tableau_d.length=0;
-
-for (var i = 0; data.plages.length - 1 >= i; i++) {
-
-                    tableau_d[data.plages[i].num_plage-1]= [data.plages[i].intitule_plage,data.plages[i].heure_debut,data.plages[i].heure_fin,data.plages[i].id_plage,data.plages[i].num_group];
-                    tableau_nbh[data.plages[i].num_plage]=data.plages[i].duree;
-                   //alert("entre "+data.plages[i].rendu+" = "+data.plages[i].duree);
-
-                  }
-
-                  
-                          //alert(tableau_d);
-
-                             
-                              creer_tableau(tableau_d,"table_entete","table");
-
-
-               $(".Semestre option").remove();
-               $(".Semestres option").remove();
-               $(".sem option").remove();
-
-                  for (var i = 0; data.semestre.length - 1 >= i; i++) {
-                    
-                   
-                      $("select.Semestre").append("<option id="+data.semestre[i].id_semestre+">"+ data.semestre[i].semestre+"</option>");
-                      
-                  }
-
-                  for (var i = 0; data.semestre.length - 1 >= i; i++) {
-                  $("select.Semestres").append("<option id="+data.semestre[i].id_semestre+">"+ data.semestre[i].semestre+"</option>");
-                      
-                  }
-                  
- for (var i = 0; data.jour.length - 1 >= i; i++) {
-                    
-                   
-                     tableau_id_jour[data.jour[i].num_jour-1]=data.jour[i].id_jour;
-                     //alert(tableau_id_jour);
-                      
-                  }
-                  $("select.sem").append("<option id=''>1</option>");
-//alert("eee");
-if (data.message==null) {
-
-                $(".sem option").remove();
-                $(".periode option:selected").remove();
-
-                if (data!= null) {
-                  //alert(data.semaine[0].numero);
-             $("select.sem").append("<option id=''>"+(parseInt(data.semaine[0].numero,10)+1)+"</option>");
-                d=data.semaine[0].debut;
-                f=data.semaine[0].fin;
-                     mois=[" ","janvier","fevrier","mars","avril","mai","juin","juillet","auout","septembre","octobre","novembre","decembre"];
-                if (d[5]+d[6]==f[5]+f[6]) {
-                            d=d[8]+d[9];
-                          }
-                          else{
-                                d=d[8]+d[9]+" "+mois[parseInt(d[5],10)+parseInt(d[6],10)];
-                              }
-                          f=f[8]+f[9]+" "+mois[parseInt(f[5],10)+parseInt(f[6],10)];
-
-                          //alert(d+" au "+f);
-             //$("select.periode").append("<option id=>"+"du "+d+" au "+f+"</option>");
-
-             tableau_semaine[0]=data.semaine[0].numero;
-             tableau_semaine[1]=data.semaine[0].debut;
-             tableau_semaine[2]=data.semaine[0].fin;
-             tableau_semaine[3]=data.annee[0].id_annee;
-
-             tableau_semaine[4]=tableau_nbh.length;
-             
-              tableau_semaine[5]=data.semaine[0].semaine_status;
-              tableau_semaine[6]=data.semaine[0].semestre_id;
-            //alert(tableau_semaine);
-            
-           }
-           else{
-            //alert("ok");
-            $("select.sem").append("<option id=''>1</option>");
-             $("select.periode").append("<option id=></option>");
-           }
-
-        
-                   
-                     //$("#choix_ok").trigger("click");
-}
-else{
-  //alert("la magie");
-  //$(".message").html(data.message);
-
-}
-            notif();
-            //planifications(9,"table","table_entete");
-};
-
-      //chargement des parcours et niveau a la selection d'une mention
-          //$(".Mention").change(function(){
-              //if ($("select.Mention").children(".Mention option:selected").attr('id')!="nul") {
-
+ 
                 
 
                 $.ajax({
@@ -811,80 +14,132 @@ else{
                   type: "POST",
                   async: false,
 
-                  data : {mention : $id_mention},
+                  data : {mention : $id_mention,
+                          cycle : $id_cycle},
                   dataType: "json",
                   success: function(data){
                     
 
            $(".Parcour option").remove();
            for (var i = 0; data.parcours.length - 1 >= i; i++) {
-             $("select.Parcour,select.P").append("<option id="+data.parcours[i].id_parcour+">"+ data.parcours[i].abreviation_parcour+"</option>");
+
+              if (data.parcours[i].mention_id == $id_mention) {
+                
+                $("select.Parcour,select.P").append("<option id="+data.parcours[i].id_parcour+">"+ data.parcours[i].abreviation_parcour+"</option>");
+              }
            }
            $(".Niveau option").remove();
-           for (var i = 0; data.niveau.length - 1 >= i; i++) {
-             $("select.Niveau").append("<option id="+data.niveau[i].id_niv_par+">"+ data.niveau[i].rendu+"</option>");
-             //$("select.PN").append("<option id="+data.niveau[i].id_niv_par+">"+ data.niveau[i].rendu+"</option>");
-
-
-           }
-            $(".pn").html($("select.Niveau").children(".Niveau option:selected").val());
-            nivv=$("select.Niveau").children(".Niveau option:selected").attr('id');
-           
-           ajax("Enregistrement/charge_",table);
-
            $.ajax({
 
                   
-                  url: base_url + "Enregistrement/precedent" ,
-                  type: "POST",
-                  async: false,
+                    url: base_url + "Choix/niveau_p" ,
+                    type: "POST",
+                    async: false,
 
-                  data : {niv: $("select.Niveau").children(".Niveau option:selected").attr('id')},
-                  dataType: "text",
-                  success: function(data){
-                   
+                    data : {id_parcour: $("select.Parcour").children(".Parcour option:selected").attr('id'),
+                            cycle:$("select.Cycle").children(".Cycle option:selected").attr('id')},
+                    dataType: "json",
+                    success: function(data){
+                      
+                        
+                             for (var i = 0; data.niv.length - 1 >= i; i++) {
+                               $("select.Niveau,select.N").append("<option id="+data.niv[i].id_niv_par+">"+ data.niv[i].rendu+"</option>");
+                              
+           } 
+        
 
-                    //alert(data);
-                    $(".preced").html(data);
-                  },
-                  error:function(){
-                    alert("erreur de requetes ");
-                  }
+        }
                 });
+            
+             $(".bouton_precedent").attr("href",base_url+"Enregistrement/precedent/" + $("select.Niveau").children(".Niveau option:selected").attr('id')+ "/" + $("select.Cycle").children(".Cycle option:selected").attr('id'))
 
-           //ajax("Enregistrement/semaines",table_);
-           //ajax_("Enregistrement/charge",table__);
-           
-           
-           
+          $(".bouton_n_edit").attr("href",base_url+"Enregistrement/nouvelle_edition/" + $("select.Niveau").children(".Niveau option:selected").attr('id')+ "/" + $("select.Cycle").children(".Cycle option:selected").attr('id'))
 
-
-
-           
-           
         }
                 });
 
 
                 
-      
+      //chargement des parcours lorsqu'on change la valeur du cycle selectionné
+          $(".Cycle").change(function(){
+
+            $(".Parcour option").remove();
+            $(".Niveau option").remove();
+
+
+            $.post(
+              base_url + "choix/ch1",
+              { cycle : $("select.Cycle").children(".Cycle option:selected").attr('id'),
+                mention : $id_mention},
+              function(data){
+            
+              
+           
+           for (var i = 0; data.parcours.length - 1 >= i; i++) {
+             
+             if (data.parcours[i].mention_id == $id_mention) {
+
+                   $("select.Parcour,select.P").append("<option id="+data.parcours[i].id_parcour+">"+ data.parcours[i].abreviation_parcour+"</option>");
+              }
+           }
+           
+          $.ajax({
+
+                  
+                    url: base_url + "Choix/niveau_p" ,
+                    type: "POST",
+                    async: false,
+
+                    data : {id_parcour: $("select.Parcour").children(".Parcour option:selected").attr('id'),
+                            cycle:$("select.Cycle").children(".Cycle option:selected").attr('id')},
+                    dataType: "json",
+                    success: function(data){
+                      
+                        
+                             for (var i = 0; data.niv.length - 1 >= i; i++) {
+                               $("select.Niveau,select.N").append("<option id="+data.niv[i].id_niv_par+">"+ data.niv[i].rendu+"</option>");
+                              
+           } 
+        
+
+        }
+                });
+
+            //systeme_plage();
+            $(".bouton_precedent").attr("href",base_url+"Enregistrement/precedent/" + $("select.Niveau").children(".Niveau option:selected").attr('id')+ "/" + $("select.Cycle").children(".Cycle option:selected").attr('id'))
+
+          $(".bouton_n_edit").attr("href",base_url+"Enregistrement/nouvelle_edition/" + $("select.Niveau").children(".Niveau option:selected").attr('id')+ "/" + $("select.Cycle").children(".Cycle option:selected").attr('id'))
+
+
+            },
+            "json"
+            );
+       
+
+            
+          });
+
 
      //chargement des niveaux lorsqu'on change la valeur du parcour selectionné
           $(".Parcour").change(function(){
 
             $.post(
-              base_url + "choix/ch2",
-              { parcour : $("select.Parcour").children(".Parcour option:selected").attr('id')},
+              base_url + "choix/niveau_p",
+              { id_parcour: $("select.Parcour").children(".Parcour option:selected").attr('id'),
+                            cycle:$("select.Cycle").children(".Cycle option:selected").attr('id')},
               function(data){
   
            $(".Niveau option").remove();
-           for (var i = 0; data.niveau.length - 1 >= i; i++) {
-             $("select.Niveau").append("<option id="+data.niveau[i].id_niv_par+">"+ data.niveau[i].rendu+"</option>");
+           for (var i = 0; data.niv.length - 1 >= i; i++) {
+             $("select.Niveau").append("<option id="+data.niv[i].id_niv_par+">"+ data.niv[i].rendu+"</option>");
           
         
            }
 
             //systeme_plage();
+            $(".bouton_precedent").attr("href",base_url+"Enregistrement/precedent/" + $("select.Niveau").children(".Niveau option:selected").attr('id')+ "/" + $("select.Cycle").children(".Cycle option:selected").attr('id'))
+
+          $(".bouton_n_edit").attr("href",base_url+"Enregistrement/nouvelle_edition/" + $("select.Niveau").children(".Niveau option:selected").attr('id')+ "/" + $("select.Cycle").children(".Cycle option:selected").attr('id'))
 
             },
             "json"
@@ -892,9 +147,15 @@ else{
 
             
           });
-          //alert($("select.P").children(".P option:selected").attr('id'));
+         
+      $(".Niveau").change(function(){
 
-          
+          $(".bouton_precedent").attr("href",base_url+"Enregistrement/precedent/" + $("select.Niveau").children(".Niveau option:selected").attr('id')+ "/" + $("select.Cycle").children(".Cycle option:selected").attr('id'))
+
+          $(".bouton_n_edit").attr("href",base_url+"Enregistrement/nouvelle_edition/" + $("select.Niveau").children(".Niveau option:selected").attr('id')+ "/" + $("select.Cycle").children(".Cycle option:selected").attr('id'))
+
+          //alert($("select.Niveau").children(".Niveau option:selected").attr('id'));
+        });
 
 
 
@@ -933,7 +194,7 @@ nivv=$("select.Niveau").children(".Niveau option:selected").attr('id');      //$
          $("#table_entete").hide();
           $("#table").hide();
 
-$.ajax({
+/*$.ajax({
 
                   
                   url: base_url + "Enregistrement/precedent" ,
@@ -951,7 +212,7 @@ $.ajax({
                     alert("erreur de requetes ");
                   }
                 });
-
+*/
 
 ajax("Enregistrement/charge_",table);
 
@@ -1565,23 +826,23 @@ ajax("Enregistrement/charge_",table);
 
 
 $("#pre").css('background-color','blue');
-$(".n_edit").hide();
+//$(".n_edit").hide();
 $("#edit").click(function(){
  
-$(".preced").hide();
+//$(".preced").hide();
 $("#edit").css('background-color','blue');
   $("#pre").css('background-color','green');
-$(".n_edit").fadeIn(1000);
+//$(".n_edit").fadeIn(1000);
 
 
                 });
 $("#pre").click(function(){
-      $(".n_edit").hide();
-       $(".preced").fadeIn(1000);
+  //    $(".n_edit").hide();
+    //   $(".preced").fadeIn(1000);
         $("#edit").css('background-color','green');
   $("#pre").css('background-color','blue');
 
                 });
 
 
-      
+     

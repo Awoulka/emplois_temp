@@ -25,12 +25,16 @@ class Enregistrement extends CI_Controller {
 		$tableau_plages= $this->input->post('tableau_plages');
 		$tableau_semaine= $this->input->post('tableau_semaine');
 		$data0=array('debut'=>$tableau_semaine[1],'fin'=> $tableau_semaine[2],'numero'=> $tableau_semaine[0],'annee_id'=>$tableau_semaine[3],'semestre_id'=>$tableau_semaine[6]);
+		$ens=null;
+		
+		
 		/*echo "<pre>";
 		print_r($tableau_plages);
 		print_r($tableau_semaine);
 		echo "</pre>";
 		die();
 		*/
+		
 		//$data1=array('semaine_id'=> $tableau_plages[][][],'jour_id'=> $data2[0]->id_jour,'plage_id'=> $data1[0]->id_plage, 'salle_id'=> $salle,'ec_id'=> $ec,'evolution'=> $evolution);
 		if ($this->Emploi->insert_semaine($data0)) {
 			$data['message1']="Enregisrement de la semaine reussit!!!";
@@ -48,20 +52,30 @@ class Enregistrement extends CI_Controller {
 				
 			for ($i=1; $i < 7 ; $i++) { 
 
+
 			
 				for ($j=1; $j < $tableau_semaine[4] ; $j++) { 
 
+					
+
 					if ($tableau_plages[$i][$j]!=-1) {
-						if ($tableau_plages[$i][$j][6]=="BIBLIOTHEQUE" || $tableau_plages[$i][$j][6]=="Congé" || $tableau_plages[$i][$j][6]=="INVESTISSEMENT HUMAIN" ) {
+						if ($tableau_plages[$i][$j][6]=="BIBLIOTHEQUE" || $tableau_plages[$i][$j][6]=="Congé" || $tableau_plages[$i][$j][6]=="INVEST_HUMAIN" || $tableau_plages[$i][$j][6]=="PROJET" ) {
 							$c1=array('id_niv_par'=>$this->input->post('niv'));
 							$d=$this->Emploi->select_ec($c1);
 							
-							$data1=array('semaine_id'=> $data['id_s'][0]->id_semaine,'jour_id'=> $tableau_plages[$i][$j][0],'plage_id'=> $tableau_plages[$i][$j][1],'salle_id'=> $tableau_plages[$i][$j][2],'ec_id'=> $d[0]->id_ec,'evolution'=> $tableau_plages[$i][$j][4],'n_groupe'=> $tableau_plages[$i][$j][7],'type_planing'=> $tableau_plages[$i][$j][6]);
+							$data1=array('semaine_id'=> $data['id_s'][0]->id_semaine,'jour_id'=> $tableau_plages[$i][$j][0],'plage_id'=> $tableau_plages[$i][$j][1],'salle_id'=> $tableau_plages[$i][$j][2],'ec_id'=> $d[0]->id_ec,'evolution'=> $tableau_plages[$i][$j][4],'n_groupe'=> $tableau_plages[$i][$j][7],'type_planing'=> $tableau_plages[$i][$j][6],'groupe'=> $tableau_plages[$i][$j][8],'heure_definit'=> $tableau_plages[$i][$j][9],'ens_prog'=> $ens);
 
 						}
 						else{
 
-						$data1=array('semaine_id'=> $data['id_s'][0]->id_semaine,'jour_id'=> $tableau_plages[$i][$j][0],'plage_id'=> $tableau_plages[$i][$j][1], 'salle_id'=> $tableau_plages[$i][$j][2],'ec_id'=> $tableau_plages[$i][$j][3],'evolution'=> $tableau_plages[$i][$j][4],'n_groupe'=> $tableau_plages[$i][$j][7],'type_planing'=> $tableau_plages[$i][$j][6]);
+							if ($tableau_plages[$i][$j][10]!= null && $tableau_plages[$i][$j][10]!=-1) {
+
+							$ens=$tableau_plages[$i][$j][10];
+						}
+							//echo $ens;
+							//die();
+
+						$data1=array('semaine_id'=> $data['id_s'][0]->id_semaine,'jour_id'=> $tableau_plages[$i][$j][0],'plage_id'=> $tableau_plages[$i][$j][1], 'salle_id'=> $tableau_plages[$i][$j][2],'ec_id'=> $tableau_plages[$i][$j][3],'evolution'=> $tableau_plages[$i][$j][4],'n_groupe'=> $tableau_plages[$i][$j][7],'type_planing'=> $tableau_plages[$i][$j][6],'groupe'=> $tableau_plages[$i][$j][8],'heure_definit'=> $tableau_plages[$i][$j][9],'ens_prog'=> $ens);
 
 							}
 								if ($this->Emploi->insert_planification($data1)) {
@@ -77,6 +91,7 @@ class Enregistrement extends CI_Controller {
 									}
 
 					}
+					$ens=null;
 						
 					}	
 			}
@@ -93,6 +108,12 @@ class Enregistrement extends CI_Controller {
 
 		$id_sem= $this->input->post('id_sem');
 		$condition=array('semaine_id'=>$id_sem);
+		$ens=null;
+		
+
+
+		$this->db->where(array('id_semaine'=>$id_sem));
+        $this->db->update('semaines',array('debut'=>$tableau_semaine[1],'fin'=>$tableau_semaine[2],'numero'=> $tableau_semaine[0],'semestre_id'=>$tableau_semaine[6]));
 		
 		if ($this->Planification->delete_plannification($condition)) {
 
@@ -102,17 +123,25 @@ class Enregistrement extends CI_Controller {
 			
 				for ($j=1; $j < $tableau_semaine[4] ; $j++) { 
 
+					
+
 					if ($tableau_plages[$i][$j]!=-1) {
-						if ($tableau_plages[$i][$j][6]=="BIBLIOTHEQUE" || $tableau_plages[$i][$j][6]=="Congé" || $tableau_plages[$i][$j][6]=="INVESTISSEMENT HUMAIN" ) {
+
+						
+						if ($tableau_plages[$i][$j][6]=="BIBLIOTHEQUE" || $tableau_plages[$i][$j][6]=="Congé" || $tableau_plages[$i][$j][6]=="INVEST_HUMAIN" || $tableau_plages[$i][$j][6]=="PROJET" ) {
 							$c1=array('id_niv_par'=>$this->input->post('niv'));
 							$d=$this->Emploi->select_ec($c1);
 							
-							$data1=array('semaine_id'=> $id_sem,'jour_id'=> $tableau_plages[$i][$j][0],'plage_id'=> $tableau_plages[$i][$j][1],'salle_id'=> $tableau_plages[$i][$j][2],'ec_id'=> $d[0]->id_ec,'evolution'=> $tableau_plages[$i][$j][4],'n_groupe'=> $tableau_plages[$i][$j][7],'type_planing'=> $tableau_plages[$i][$j][6]);
+							$data1=array('semaine_id'=> $id_sem,'jour_id'=> $tableau_plages[$i][$j][0],'plage_id'=> $tableau_plages[$i][$j][1],'salle_id'=> $tableau_plages[$i][$j][2],'ec_id'=> $d[0]->id_ec,'evolution'=> $tableau_plages[$i][$j][4],'n_groupe'=> $tableau_plages[$i][$j][7],'type_planing'=> $tableau_plages[$i][$j][6],'groupe'=> $tableau_plages[$i][$j][8],'heure_definit'=> $tableau_plages[$i][$j][9],'ens_prog'=> $ens);
 
 						}
 						else{
+							if ( $tableau_plages[$i][$j][10]!=-1) {
 
-						$data1=array('semaine_id'=> $id_sem,'jour_id'=> $tableau_plages[$i][$j][0],'plage_id'=> $tableau_plages[$i][$j][1], 'salle_id'=> $tableau_plages[$i][$j][2],'ec_id'=> $tableau_plages[$i][$j][3],'evolution'=> $tableau_plages[$i][$j][4],'n_groupe'=> $tableau_plages[$i][$j][7],'type_planing'=> $tableau_plages[$i][$j][6]);
+							$ens=$tableau_plages[$i][$j][10];
+						}
+
+						$data1=array('semaine_id'=> $id_sem,'jour_id'=> $tableau_plages[$i][$j][0],'plage_id'=> $tableau_plages[$i][$j][1], 'salle_id'=> $tableau_plages[$i][$j][2],'ec_id'=> $tableau_plages[$i][$j][3],'evolution'=> $tableau_plages[$i][$j][4],'n_groupe'=> $tableau_plages[$i][$j][7],'type_planing'=> $tableau_plages[$i][$j][6],'groupe'=> $tableau_plages[$i][$j][8],'heure_definit'=> $tableau_plages[$i][$j][9],'ens_prog'=> $ens);
 
 							}
 								if ($this->Emploi->insert_planification($data1)) {
@@ -129,6 +158,8 @@ class Enregistrement extends CI_Controller {
 									}
 
 					}
+
+					$ens=null;
 						
 					}	
 			}
@@ -166,6 +197,7 @@ class Enregistrement extends CI_Controller {
           $data['enseignants']=$this->Impression_ens->select_enseignants();
           $data['departement']=$this->Impression->select_departement();
 		 $this->load->view('templates/consultation',$data);
+
 	
 			}
 
@@ -176,7 +208,9 @@ class Enregistrement extends CI_Controller {
           $data['niv_par']=$this->Impression->select_niv_par();
           $data['enseignants']=$this->Impression_ens->select_enseignants();
           $data['departement']=$this->Impression->select_departement();
-		 $this->load->view('templates/plages',$data);
+          $this->load->view('template/header.php',$data);
+		 $this->load->view('template/plages',$data);
+		 $this->load->view('template/footer.php',$data);
 	
 			}
 
@@ -231,8 +265,30 @@ public function precedent($id_niv){
         $data['cycles']=$this->Mentions->select_cycle();
 		$data['mentions']=$this->Mentions->select();
 		$data['n']=$this->Emploi->select_niv(array('id_niv_par'=> $id_niv));
+		$this->load->view('template/header.php',$data);
 		 $this->load->view('template/emplois_preced',$data);
+		 $this->load->view('template/footer.php',$data);
 		}
+
+		public function nouvelle_edition($id_niv,$cycle){
+			//$data['mentions']=$this->Mentions->select();
+		$this->db->where(array('status'=> 'en cours'));
+        $data['annee']=$this->db->get('annee_academiques')->result();
+        $data1=$this->db->get('annee_academiques')->result();
+        $condition=array('annee_id'=> $data1[0]->id_annee);
+        $data['num_semaine']=$this->Mentions->select_semaine($condition);
+        $data['semestre']=$this->db->get('semestres')->result();
+        $data['cycles']=$this->Mentions->select_cycle();
+		$data['mentions']=$this->Mentions->select();
+		$data['n']=$this->Emploi->select_niv(array('id_niv_par'=> $id_niv));
+		$this->db->where(array('id_cycle'=> $cycle));
+        
+		$data['cycle']=$this->db->get('cycles')->result();
+		
+			$this->load->view('template/header.php',$data);
+			$this->load->view('template/nouvel_edit.php',$data);
+			$this->load->view('template/footer.php',$data);
+		} 
 
 public function modification(){
 	$id= $this->input->post('niv');
@@ -246,7 +302,9 @@ public function modification(){
 		$data['mentions']=$this->Mentions->select();
 		$data['n']=$id;
 		$data['id_sem']=$this->input->post('id');
-		 $this->load->view('templates/modification',$data);
+		$this->load->view('template/header.php',$data);
+		$this->load->view('templates/modification',$data);
+		$this->load->view('template/footer.php',$data);
 	
 			}
 
@@ -379,8 +437,8 @@ public function modification(){
         	$id=array('id_semestre'=> $key->semestre_id);
         	$key->semestre=$this->Impression->select_semestre_($id);
         }
-		$id= array('semaine_id' => $data['semaine'][0]->id_semaine );
-		$data['planifications']=$this->Impression->select_planification($id);
+		$id= array('semaine_id' => $data['semaine'][0]->id_semaine,'annee_academiques.status'=> 'en cours');
+		$data['planifications']=$this->Impression->select_planification_m($id);
         $n_group=$data['planifications'][0]->n_groupe;
         $id= array('id_annee' => $data['semaine'][0]->annee_id );
         $data_a=$this->Impression->select_annee($id);
@@ -413,7 +471,7 @@ public function modification(){
         	 $value->ec=$data1;
         	 $value->heure=$data1[0]->heure;
 
- 		$id=array('ec_id'=> $data1[0]->id_ec);
+ 		$id=array('ec_id'=> $data1[0]->id_ec,'annee_academiques.status'=> 'en cours');
  		$value->enseignant=$this->Impression->select_enseignant($id);
 
  		$id=array('id_ue'=> $data1[0]->ue_id);
@@ -453,7 +511,31 @@ public function modification(){
 			echo json_encode($data);
 
 	}
+public function sem(){
 
+
+	$id= array('id_niv_par'=>$this->input->post('niv'));
+	    $data_st=$this->Impression->select_semestre($id);
+		$data['semestre']=$data_st;
+	$id= array('id_ue'=>$this->input->post('UE'));
+	    $data_st=$this->Impression->select_sem_($id);
+		$data['sem']=$data_st;
+
+		echo json_encode($data);
+
+}
+
+public function sem_(){
+
+
+	$id= array('id_niv_par'=>$this->input->post('niv'));
+	    $data_st=$this->Impression->select_semestre($id);
+		$data['semestre']=$data_st;
+	
+
+		echo json_encode($data);
+
+}
 public function charge(){
 
 		$id= $this->input->post('niv');
@@ -584,7 +666,9 @@ public function charge(){
 		$data['jour']=$this->Emploi->select_jour();
 
 		$id= array('id_niv_par'=>$this->input->post('niv'));
-	    $data_st=$this->Impression->select_semestre($id);
+	    $data_st=$this->Emploi->fetch_sem_($this->input->post('niv'));
+	    //print_r($data_st);
+	    //die();
 		$data['semestre']=$data_st;
 		
 		
@@ -773,7 +857,7 @@ public function charge(){
 	}
 	public function niv(){
     $id= $this->input->post('id_niv');
-    $condition = array('niv_par_id' => $id );
+    $condition = array('niv_par_id' => $id ,'status'=> 'en cours');
     $id_s=$this->Impression->select_emplois($condition);
 
          $i=0;

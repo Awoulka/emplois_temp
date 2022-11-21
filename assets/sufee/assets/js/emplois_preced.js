@@ -1,5 +1,6 @@
 
 
+//alert("aa")
 
 var tableau_id= new Array(4);
             tableau_id[1]= new Array(7);
@@ -25,6 +26,8 @@ var tableau_id_jour= [];
 
 
 function creer_tableau_(tableau,tableau_entete,tableau_emploie){
+
+    //alert("aa")
   
   var tableau_jour=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
 
@@ -37,12 +40,12 @@ function creer_tableau_(tableau,tableau_entete,tableau_emploie){
                       
                                             if((tableau[i+1]!=null && tableau[i+1][0]=="pause") || tableau[i+1]==null){
 
-                                               celulle+="<td>"+tableau[i][1][0]+tableau[i][1][1]+"h<div align='right' style='float: right;'>"+tableau[i][2][0]+tableau[i][2][1]+"h</div></td>";
+                                               celulle+="<td>"+tableau[i][1][0]+tableau[i][1][1]+"h"+tableau[i][1][3]+tableau[i][1][4]+"<div align='right' style='float: right;'>"+tableau[i][2][0]+tableau[i][2][1]+"h"+tableau[i][2][3]+tableau[i][2][4]+"</div></td>";
                                     //            alert(tableau_d[i][1][0]+tableau_d[i][1][1]);
 
                                             }
                                           else{
-                                                 celulle+="<td>"+tableau[i][1][0]+tableau[i][1][1]+"h</td>";
+                                                 celulle+="<td>"+tableau[i][1][0]+tableau[i][1][1]+"h"+tableau[i][1][3]+tableau[i][1][4]+"</td>";
                                       //          alert(tableau_d[i][1][0]+tableau_d[i][1][1]);
 
                                           }
@@ -106,64 +109,176 @@ function creer_tableau_(tableau,tableau_entete,tableau_emploie){
 function Remplir(tableau,ligne,colonne,index0){
 
 
-  if (tableau[ligne][colonne][9]=="BIBLIOTHEQUE" || 
-      tableau[ligne][colonne][9]=="Congé" || 
-      tableau[ligne][colonne][9]=="INVESTISSEMENT HUMAIN") {
-              $("#"+index0).html("<center>"+"<font size=5 >"+tableau[ligne][colonne][9]+"</font>"+"</center>");
-            }
-  else{ 
-              if (tableau[ligne][colonne][6]!='' && tableau[ligne][colonne][6]!=tableau[ligne][colonne][5] ) {
-                  ens2=" / "+tableau[ligne][colonne][6];
-              }
-              else{
-                ens2="";
+                       if (tableau[ligne][colonne][9]=="BIBLIOTHEQUE" || 
+                           tableau[ligne][colonne][9]=="Congé" || 
+                           tableau[ligne][colonne][9]=="INVEST_HUMAIN") {
+                                   $("#"+index0).html("<center>"+"<font size=5 >"+tableau[ligne][colonne][9]+"</font>"+"</center>");
+                                 }
+                       else{ 
+                                  /* if (tableau[ligne][colonne][6]!='' && tableau[ligne][colonne][6]!=tableau[ligne][colonne][5] ) {
+                                       ens2=" / "+tableau[ligne][colonne][6];
+                                   }
+                                   else{
+                                     ens2="";
 
-              }
-
-                if (tableau[ligne][colonne][9]=="Cour") {
-
-                  $("#"+index0).html("<center>"
-                    +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
-                    +"</div>"+
-                   "<div >"+"<font size=2>"+tableau[ligne][colonne][5]+ens2+"</font>"
-                   +"</div>"
-                   +"<div style='float: left;'>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+"<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
-                  +"</center>");
-                  //alert(index0);
-                }
-
-                else{
-                  if (tableau[ligne][colonne][9]=="TP"      || 
-                      tableau[ligne][colonne][9]=="TPE"     ||
-                      tableau[ligne][colonne][9]=="TD"      || 
-                      tableau[ligne][colonne][9]=="CC"      
-                        ) {
-                  $("#"+index0).html("<center>"
-                    +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
-                    +"</div>"+
-                   "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
-                   +"</div>"
-                  +"<div style='float: left;''>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+"<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
-                  +"</center>");
-                  }
-
-                  else{
-                    $("#"+index0).html("<center>"
-                    +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
-                    +"</div>"+
-                   "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
-                   +"</div>"
-                   +"<div >"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"
-                  +"</center>");
-
-                  }
+                                   }*/
 
 
-                }
-              
-            }
+                                  ens2=tableau[ligne][colonne][5];
+                        if (ens2==null) {
 
-          
+                            ens2='<p style="color: red;">Aucun enseignant affecté à cette matière!!!!</p>'
+                        }
+
+                                     if (tableau[ligne][colonne][9]=="Cour") {
+
+                                        if (tableau[ligne][colonne][11] != 0) {
+
+                                            if (tableau[ligne][colonne][12]==0) {
+
+                                            $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+ens2+"</font>"
+                                        +"</div>"
+                                        +"<div style='float: left;'>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                        "<div style='float: ;'>"+"<font size=3>&nbsp;Groupe "+tableau[ligne][colonne][11]+"</div>"+
+                                        "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
+                                       +"</center>");}
+
+                                            else{
+
+                                                $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+ens2+"</font>"
+                                        +"</div>"
+                                        +"<div style='float: left;'>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                        "<div style='float: ;'>"+"<font size=3>&nbsp;Groupe "+tableau[ligne][colonne][11]+"</div>"+
+                                        "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][12]+"</font>"+"</div>"
+                                       +"</center>");
+                                            }
+                                        }
+                                        else{
+
+                                            
+
+                                            if (tableau[ligne][colonne][12]==0) {
+
+                                            $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+ens2+"</font>"
+                                        +"</div>"
+                                        +"<div style='float: left;'>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                        "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
+                                       +"</center>");
+                                        }
+
+                                            else{
+
+                                               $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+ens2+"</font>"
+                                        +"</div>"
+                                        +"<div style='float: left;'>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                        "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][12]+"</font>"+"</div>"
+                                       +"</center>");
+                                            }
+                                        }
+
+                                       
+                                       //alert(index0);
+                                     }
+
+                                     else{
+                                       if (tableau[ligne][colonne][9]=="TP"      || 
+                                           tableau[ligne][colonne][9]=="TPE"     ||
+                                           tableau[ligne][colonne][9]=="TD"      || 
+                                           tableau[ligne][colonne][9]=="CC"      
+                                             ) {
+                                        if (tableau[ligne][colonne][11] != 0) {
+
+                                            
+
+                                            if (tableau[ligne][colonne][12]==0) {
+
+                                            $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
+                                        +"</div>"
+                                       +"<div style='float: left;''>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                       "<div style='float: ;'>"+"<font size=3>&nbsp;Groupe "+tableau[ligne][colonne][11]+"</div>"+
+                                       "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
+                                       +"</center>");
+                                        }
+
+                                            else{
+
+                                               $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
+                                        +"</div>"
+                                       +"<div style='float: left;''>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                       "<div style='float: ;'>"+"<font size=3>&nbsp;Groupe "+tableau[ligne][colonne][11]+"</div>"+
+                                       "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][12]+"</font>"+"</div>"
+                                       +"</center>");
+                                            }
+
+                                        }
+                                        else{
+
+                                           
+
+
+                                             if (tableau[ligne][colonne][12]==0) {
+
+                                            $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
+                                        +"</div>"
+                                       +"<div style='float: left;''>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                       "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
+                                       +"</center>");
+                                        }
+
+                                            else{
+
+                                               $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
+                                        +"</div>"
+                                       +"<div style='float: left;''>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                       "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][12]+"</font>"+"</div>"
+                                       +"</center>");
+                                            }
+                                        }
+                                       
+                                       }
+
+
+                                       else{
+                                         $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
+                                        +"</div>"
+                                        +"<div >"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"
+                                       +"</center>");
+
+                                       }
+
+
+                                     }
+                                   
+                                 }
+
+                               
 }; 
 
 $(document).ready(
@@ -244,23 +359,87 @@ for (var i = 1; 7 - 1 >= i; i++) {
 
             }
             
+            if (data.planifications[i].ens_prog==null) {
+              
+              ens_p=-1;
+            }
+            else{
+
+              ens_p=data.planifications[i].ens_prog;
+            }
             
-           tableau_id[data.planifications[i].num_jour][data.planifications[i].num_plage]=[tableau_id_jour[data.planifications[i].num_jour-1],tableau_d_[data.planifications[i].num_plage-1][3],data.planifications[i].salle_id,data.planifications[i].ec_id,data.planifications[i].evolution,data.planifications[i].ue[0].id_ue,data.planifications[i].type_planing,tableau_d_[0][4]];
+           tableau_id[data.planifications[i].num_jour][data.planifications[i].num_plage]=
+           [tableau_id_jour[data.planifications[i].num_jour-1],
+           tableau_d_[data.planifications[i].num_plage-1][3],
+           data.planifications[i].salle_id,
+           data.planifications[i].ec_id,
+           data.planifications[i].evolution,
+           data.planifications[i].ue[0].id_ue,
+           data.planifications[i].type_planing,
+           tableau_d_[0][4],
+           ens_p
+           ];
 
             ec=data.planifications[i].ec[0].code_ec+"("+data.planifications[i].ec[0].intitule_ec+")";
 
         if (data.planifications[i].type_planing=="BIBLIOTHEQUE" ||
           data.planifications[i].type_planing=="Congé" ||
-          data.planifications[i].type_planing=="INVESTISSEMENT HUMAIN") {
+          data.planifications[i].type_planing=="INVEST_HUMAIN") {
           ensei="";
         ens="";
 
 
         }
         else{
-          ensei=data.planifications[i].enseignant[0].nom_prenom;
+
+            ensei="";
+          //ensei=data.planifications[i].enseignant[0].nom_prenom;
+
+          if (data.planifications[i].ens_prog==null) {
+
+
+                for (var j = 0; data.planifications[i].enseignant.length - 1 >= j; j++) {
+                    if (j==0) {
+                  ensei+=data.planifications[i].enseignant[j].nom_prenom;
+                    }
+                    else{
+
+                      ensei+=" / "+data.planifications[i].enseignant[j].nom_prenom;
+                    }
+
+                }
+              }
+                else{
+                  
+                  for (var k = 0; data.planifications[i].enseignant.length - 1 >= k; k++) {
+                  if (data.planifications[i].enseignant[k].id_personnel==data.planifications[i].ens_prog) {
+                    
+                  ensei=data.planifications[i].enseignant[k].nom_prenom;
+                   
+                     
+                    }
+                    
+                }
+
+                
+                
+              }
         }
-           tableau_valeurs[data.planifications[i].num_jour][data.planifications[i].num_plage]=[tableau_id_jour[data.planifications [i].num_jour-1],tableau_d_[data.planifications[i].num_plage-1][3],data.planifications[i].salle,ec,data.planifications[i].evolution,ensei,ens,data.planifications[i].heure,data.planifications[i].ue[0].intitule_ue,data.planifications[i].type_planing,data.planifications[i].semestre[0].id_semestre];
+           tableau_valeurs[data.planifications[i].num_jour][data.planifications[i].num_plage]=
+           [tableau_id_jour[data.planifications [i].num_jour-1],
+           tableau_d_[data.planifications[i].num_plage-1][3],
+           data.planifications[i].salle,
+           ec,
+           data.planifications[i].evolution,
+           ensei,
+           ens,
+           data.planifications[i].heure,
+           data.planifications[i].ue[0].intitule_ue,
+           data.planifications[i].type_planing,
+           data.planifications[i].semestre[0].id_semestre,
+           data.planifications[i].groupe,
+           data.planifications[i].heure_definit];
+           //alert(data.planifications[i].semestre[0].id_semestre);
          }
 
 

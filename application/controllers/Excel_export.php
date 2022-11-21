@@ -14,12 +14,14 @@ class Excel_export extends CI_Controller {
 
    public function index(){
     $this->load->model('Excel_export_model');
+
     $data['mentions']=$this->Excel_export_model->select();
     $this->load->view('templates/Excel',$data);
    }
 
 	public function etat(){
          $this->load->model('Excel_export_model');
+         $this->load->model('Mentions');
        
     $con = array('id_niv_par' => $this->input->post('Niveau'));
     $data['ec']=$this->Excel_export_model->select_ec_stat($con);  
@@ -38,7 +40,7 @@ class Excel_export extends CI_Controller {
 
         $annee=$this->Excel_export_model->select_annee( array('status' => "en cours"));
         $value->annee=$annee[0]->annee;
-        $value->enseignant=$this->Excel_export_model->select_enseignant(array('ec_id' => $value->id_ec ));
+        $value->enseignant=$this->Excel_export_model->select_enseignant(array('ec_id' => $value->id_ec,'status' => "en cours" ));
         $value->heures=$this->Excel_export_model->select_heure(array('id_ec' => $value->id_ec ));
 
    }  
@@ -49,15 +51,124 @@ class Excel_export extends CI_Controller {
     $con = array('niveau_id' =>$data_niv_par[0]->niveau_id);
     $data['semestre']=$this->Excel_export_model->select_semestre($con);
     $value->semestre=$data['semestre']; 
-    $data['annees']=$this->Excel_export_model->select_annee(array('status' => "en cours"));
+    
      }
-  echo "<pre>";
-   //print_r($data);
-   echo "</pre>";
+     $data['annees']=$this->Excel_export_model->select_annee(array('status' => "en cours"));
 
+        $data['semestre']=$this->db->get('semestres')->result();
+        $data['cycles']=$this->Mentions->select_cycle();
+        $data['mentions']=$this->Mentions->select();
+  //echo "<pre>";
+   //print_r($data);
+   //echo "</pre>";
+      $this->load->view('template/header.php',$data);
       $this->load->view('template/Etat_heure',$data);
+      $this->load->view('template/footer.php',$data);
  
 	}
+
+    public function etat_tableau(){
+         $this->load->model('Excel_export_model');
+         $this->load->model('Mentions');
+       
+    $con = array('id_niv_par' => $this->input->post('id_niveau'));
+    $data['ec']=$this->Excel_export_model->select_ec_stat($con);  
+    //print_r($data);
+   $i=0;
+    foreach ($data['ec'] as $value) {
+     
+        $value->evolution=$this->Excel_export_model->select_evolution(array('ec_id' => $value->id_ec,'status' => "en cours" ));
+        if ($value->evolution[0]->evolution=='') {
+         $value->evolution=0;
+        }
+        else{
+          $value->evolution=$value->evolution[0]->evolution;
+        }
+        $value->semestre=$this->Excel_export_model->select_semestre( $value->niv_par_id );
+
+        $annee=$this->Excel_export_model->select_annee( array('status' => "en cours"));
+        $value->annee=$annee[0]->annee;
+        $value->enseignant=$this->Excel_export_model->select_enseignant(array('ec_id' => $value->id_ec,'status' => "en cours" ));
+        $value->heures=$this->Excel_export_model->select_heure(array('id_ec' => $value->id_ec ));
+
+   }  
+   $con = array('id_niv_par' => $this->input->post('id_niveau'));
+    $data_niv_par=$this->Excel_export_model->select_niv($con);
+    $data['niv_par']= $data_niv_par;
+    foreach ($data['niv_par'] as $value) {
+    //$con = array('niveau_id' =>$data_niv_par[0]->niveau_id);
+        $con=$this->input->post('id_niveau');
+    $data['semestre']=$this->Excel_export_model->select_semestre($con);
+    $value->semestre=$data['semestre']; 
+    
+     }
+     $data['annees']=$this->Excel_export_model->select_annee(array('status' => "en cours"));
+
+        $data['semestre']=$this->db->get('semestres')->result();
+        $data['cycles']=$this->Mentions->select_cycle();
+        $data['mentions']=$this->Mentions->select();
+  //echo "<pre>";
+   //print_r($data);
+   //echo "</pre>";
+     // $this->load->view('template/header.php',$data);
+      //$this->load->view('template/Etat_heure',$data);
+      $this->load->view('template/Etat_heure_select',$data);
+      //$this->load->view('template/footer.php',$data);
+ 
+    }
+
+    public function etat_select(){
+         $this->load->model('Excel_export_model');
+         $this->load->model('Mentions');
+         $this->load->library('Pdf');
+       
+    $con = array('id_niv_par' => $this->input->post('Niveau'));
+    $data['ec']=$this->Excel_export_model->select_ec_stat($con);  
+    //print_r($data);
+   $i=0;
+    foreach ($data['ec'] as $value) {
+     
+        $value->evolution=$this->Excel_export_model->select_evolution(array('ec_id' => $value->id_ec,'status' => "en cours" ));
+        if ($value->evolution[0]->evolution=='') {
+         $value->evolution=0;
+        }
+        else{
+          $value->evolution=$value->evolution[0]->evolution;
+        }
+        $value->semestre=$this->Excel_export_model->select_semestre( array('niveau_id' => $value->niveau_id ));
+
+        $annee=$this->Excel_export_model->select_annee( array('status' => "en cours"));
+        $value->annee=$annee[0]->annee;
+        $value->enseignant=$this->Excel_export_model->select_enseignant(array('ec_id' => $value->id_ec,'status' => "en cours" ));
+        $value->heures=$this->Excel_export_model->select_heure(array('id_ec' => $value->id_ec ));
+
+   }  
+   $con = array('id_niv_par' => $this->input->post('Niveau'));
+    $data_niv_par=$this->Excel_export_model->select_niv($con);
+    $data['niv_par']= $data_niv_par;
+    foreach ($data['niv_par'] as $value) {
+    $con = array('niveau_id' =>$data_niv_par[0]->niveau_id);
+    $data['semestre']=$this->Excel_export_model->select_semestre($con);
+    $value->semestre=$data['semestre']; 
+    
+     }
+     $data['annees']=$this->Excel_export_model->select_annee(array('status' => "en cours"));
+
+        $data['semestre']=$this->db->get('semestres')->result();
+        $data['cycles']=$this->Mentions->select_cycle();
+        $data['mentions']=$this->Mentions->select();
+  //echo "<pre>";
+   //print_r($data);
+   //echo "</pre>";
+
+        $this->pdf->generate('template/Etat_heure_select',$data);
+       $this->load->view('template/Etat_heure_select',$data);
+      //$this->load->view('template/header.php',$data);
+      //$this->load->view('template/Etat_heure_select',$data);
+      //$this->load->view('template/footer.php',$data);
+ 
+    }
+
   public function ch1(){
     $id= $this->input->post('mention');
     $condition=array('mention_id'=> $id);
@@ -93,7 +204,7 @@ class Excel_export extends CI_Controller {
         $value->semestre=$this->Excel_export_model->select_semestre( array('niveau_id' => $value->niveau_id ));
         $annee=$this->Excel_export_model->select_annee( array('status' => "en cours"));
         $value->annee=$annee[0]->annee;
-        $value->enseignant=$this->Excel_export_model->select_enseignant(array('ec_id' => $value->id_ec ));
+        $value->enseignant=$this->Excel_export_model->select_enseignant(array('ec_id' => $value->id_ec,'status' => "en cours" ));
         $value->heures=$this->Excel_export_model->select_heure(array('id_ec' => $value->id_ec ));
         $value->vide="   ";
 

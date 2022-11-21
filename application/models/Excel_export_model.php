@@ -30,7 +30,7 @@ class Excel_export_model extends CI_Model {
         }
         public function select_heure($condition=array()){
            //$this->db->sum('heure_cm,heure_tp,heure_td');
-            $this->db->select('heure_cm, heure_tp, heure_td');
+            $this->db->select('h_cours, h_tp, h_td');
             $this->db->from('ec');
             $this->db->where($condition);
             return $this->db->get()->result();
@@ -45,7 +45,19 @@ class Excel_export_model extends CI_Model {
             $this->db->where($condition);
               return $this->db->get()->result();
         }
-         public function select_semestre($condition=array())        
+
+        
+         public function select_semestre($condition)        
+        {     
+            $query="SELECT * FROM semestres , semestre_niv , niv_par WHERE semestres.id_semestre=semestre_niv.semestre_id AND semestre_niv.niveau_id=niv_par.niveau_id AND niv_par.id_niv_par = ? ";
+      $query=$this->db->query( $query ,  $condition);
+
+        return $query->result();
+          //$this->db->order_by('semestre', 'ASC');
+          //$this->db->where($condition);
+                //return $this->db->get('semestres')->result();
+        }
+         public function select_semestre__($condition=array())        
         {     
           $this->db->order_by('semestre', 'ASC');
           $this->db->where($condition);
@@ -59,9 +71,12 @@ class Excel_export_model extends CI_Model {
         {   
             $this->db->select('nom_prenom');
             $this->db->from('personnels');
-            $this->db->join('enseignes','enseignes.personnel_id=personnels.id_personnel');    
+            $this->db->join('enseignes','enseignes.personnel_id=personnels.id_personnel');
+            $this->db->join('annee_academiques','annee_academiques.id_annee=enseignes.annee_id');    
             $this->db->where($condition);
                 return $this->db->get()->result();
         }
+
+        
        
 }?>

@@ -82,7 +82,8 @@ class Stat extends CI_Controller {
 	}
 	public function niv(){
     $id= $this->input->post('id_niv');
-    $condition = array('niv_par_id' => $id );
+    $id_annee= $this->input->post('id_annee');
+    $condition = array('niv_par_id' => $id, 'annee_id'=> $id_annee);
     $id_s=$this->Impression->select_emplois($condition);
 
          $i=0;
@@ -113,13 +114,19 @@ class Stat extends CI_Controller {
 
 	public function ch1(){
        
-		$id= $this->input->post('mention');
-		$condition=array('mention_id'=> $id);
-		$data['parcours']=$this->Parcours->select($condition);
-		$data1=$this->Parcours->select($condition);
-		$condition1=array('parcour_id'=> $data1[0]->id_parcour);
-		$data['niveau']=$this->Parcours->select_niv($condition1);
+		$id_mention= $this->input->post('mention');
+		$id_cycle= $this->input->post('cycle');
+		$condition=array('cycle_id'=> $id_cycle);
+		//$data['parcours']=$this->Parcours->select($condition);
+		$data['parcours']=$this->Parcours->select_cycle_parcour($condition);
+		$data1=$this->Parcours->select_cycle_parcour(array('cycle_id'=> $id_cycle));
+		if ($data1[0]->mention_id == $id_mention) {
+			$condition1=array('parcour_id'=> $data1[0]->id_parcour);
+			$data['niveau']=$this->Parcours->select_niv($condition1);
+		}
+		
 		//print_r($data) ;
+		//die();
 		echo json_encode($data);
 
 		
@@ -134,6 +141,28 @@ class Stat extends CI_Controller {
 
 		
 	}  
+
+
+	public function niveau_p(){
+		$id= $this->input->post('id_parcour');
+		$cycle= $this->input->post('cycle');
+		$condition=array('parcour_id'=> $id,'id_cycle'=> $cycle);
+
+			$this->db->select('*');
+            $this->db->from('niv_par');
+            $this->db->join('niveaux','niveaux.id_niveau=niv_par.niveau_id');
+            $this->db->join('cycles','cycles.id_cycle=niveaux.cycle_id');
+			$this->db->where($condition);
+		$data['niv']=$this->db->get()->result();
+		/*echo "<pre>";
+        print_r($data['niv']);
+        echo "</pre>";
+          echo $cycle;*/
+
+		echo json_encode($data);
+
+		
+	} 
 	public function ch3()
 	{   
 		$id= $this->input->post('Niveau');

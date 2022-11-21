@@ -11,6 +11,8 @@
 
  	}
 
+   
+
  	public function select_id($condition=array()){
 
  		$this->db->where($condition);

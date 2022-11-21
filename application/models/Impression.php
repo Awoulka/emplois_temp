@@ -66,8 +66,11 @@ class Impression extends CI_Model {
            $this->db->from('plannification');
            $this->db->join('ec','plannification.ec_id=ec.id_ec');
            $this->db->join('ue','ec.ue_id=ue.id_ue');
-           $this->db->join('associations','ue.id_ue=associations.ue_id');     
+           $this->db->join('associations','ue.id_ue=associations.ue_id');
+           $this->db->join('semaines','semaines.id_semaine=plannification.semaine_id');
+           $this->db->join('annee_academiques','annee_academiques.id_annee=semaines.annee_id');  
            $this->db->where($condition);
+           $this->db->order_by('semaines.numero','DESC');
                 return $this->db->get()->result();
         }
 
@@ -90,6 +93,7 @@ class Impression extends CI_Model {
             $this->db->select('*');
             $this->db->from('semaines');
             $this->db->where($condition);
+            $this->db->order_by('numero','DESK');
              return $this->db->get()->result();
         }
 
@@ -104,6 +108,15 @@ class Impression extends CI_Model {
          public function select_planification($condition=array())   
         {       $this->db->where($condition);
                 return $this->db->get('plannification')->result();
+        }
+        public function select_planification_m($condition=array())   
+        {      
+                $this->db->select('*');
+           $this->db->from('plannification');
+           $this->db->join('semaines','semaines.id_semaine=plannification.semaine_id');
+           $this->db->join('annee_academiques','annee_academiques.id_annee=semaines.annee_id'); 
+           $this->db->where($condition);
+                return $this->db->get()->result();
         }
           public function select_jour($condition=array())   
         {       $this->db->where($condition);
@@ -123,7 +136,8 @@ class Impression extends CI_Model {
         {   
             $this->db->select('*');
             $this->db->from('personnels');
-            $this->db->join('enseignes','enseignes.personnel_id=personnels.id_personnel');    
+            $this->db->join('enseignes','enseignes.personnel_id=personnels.id_personnel');
+            $this->db->join('annee_academiques','annee_academiques.id_annee=enseignes.annee_id');      
             $this->db->where($condition);
                 return $this->db->get()->result();
         }
@@ -162,6 +176,17 @@ class Impression extends CI_Model {
             $this->db->join('niv_par','niv_par.id_niv_par=associations.niv_par_id');        
             $this->db->where($condition);
                 return $this->db->get()->result();
+        }
+
+        public function select_sem_($condition=array())   
+        {   
+            $this->db->select('id_semestre');
+            $this->db->distinct();
+            $this->db->from('semestres');
+            $this->db->join('ue','ue.semestre_id=semestres.id_semestre');
+                    
+            $this->db->where($condition);
+                return $this->db->get()->row();
         }
 
 

@@ -626,7 +626,7 @@
 
         </div> <!-- .content -->
         <div id="" class=" b">
-     tuxfjhjhxdujdjdyjd
+     
         </div>
     </div><!-- /#right-panel -->
    
@@ -771,7 +771,7 @@ $(".notifications").click(function(){
                 });
               });
 */
-  $(".b").hide();
+  //$(".b").hide();
       $.ajax({
 
                   
@@ -794,7 +794,7 @@ $(".notifications").click(function(){
       $.ajax({
 
                   
-                  url: "<?php  echo base_url();?>" + "Enregistrement/edit" ,
+                  url: "<?php  echo base_url();?>" + "choix/consult_salle" ,
                   type: "POST",
                   //async: false,
 

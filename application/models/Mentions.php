@@ -23,6 +23,17 @@ class Mentions extends CI_Model {
         {       $this->db->where($condition);
                 return $this->db->get('mentions')->result();
         }
+
+        public function select_cycle_mention($condition=array())   
+        {         
+            $this->db->select('*');
+            $this->db->from('cycle_mention');
+            $this->db->join('mentions','mentions.id_mention = cycle_mention.mention_id');
+            $this->db->where($condition);
+                return $this->db->get()->result();
+     
+        }
+
         public function select_cycle($condition=array())   
         {       $this->db->where($condition);
                 return $this->db->get('cycles')->result();

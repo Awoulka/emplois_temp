@@ -53,12 +53,15 @@ class imprimer extends CI_Controller {
         	$value->jour_id=$data1[0]->num_jour;
 
         	$id= array('id_plage' => $value->plage_id);
+        	/*echo $data1[0]->num_plage;
+ 			die();*/
         	$data1=$this->Impression->select_plage($id);
         	$value->plage_id=$data1[0]->num_plage;
- 
+ 			
+
 			$id= array('id_salle' => $value->salle_id);
         	$data1=$this->Impression->select_salle($id);
-        	$value->salle_id=$data1[0]->nom_salle."(". $data1[0]->intitule_salle.")";
+        	$value->salle_id=$data1[0]->nom_salle;
  
 
 			$id= array('id_ec' => $value->ec_id);
@@ -66,7 +69,7 @@ class imprimer extends CI_Controller {
         	$value->ec_id=$this->Impression->select_ec($id);
         	$value->heure=$data1[0]->heure;
 
- 		    $id=array('ec_id'=> $data1[0]->id_ec);
+ 		    $id=array('ec_id'=> $data1[0]->id_ec,'annee_academiques.status'=> 'en cours');
  		    $value->enseignant=$this->Impression->select_enseignant($id);
 
 
@@ -97,7 +100,8 @@ class imprimer extends CI_Controller {
         	$data['niv']=$data_niv;
         	$data['mention']=$data_m;
            //je ne comprend pas pourquoi petit (p)
-	 $this->pdf->generate('templates/imprimer',$data);
+        	$name_pdf = "Semaine ".$data_s[0]->numero."_".$data_niv[0]->rendu;
+	 $this->pdf->generate('templates/imprimer',$data,$name_pdf);
 
         	//echo "<pre>";
 		//print_r($data) ;
@@ -155,18 +159,48 @@ class imprimer extends CI_Controller {
 
 	public function emp(){
 		$id= $this->input->post('id_ens');
-    $condition = array('personnel_id' => $id );
+    $condition = array('personnel_id' => $id ,'status' => "en cours",'semaine_status' =>4);
     $data=$this->Impression_ens->select_emploi_ens($condition);                                                  
    
          $i=0;
-     	foreach ($data as $value) {
-     		$id_s[$i] =$value->semaine_id;
+         $r=[];
+
+         foreach ($data as $value) {
+
+       
+        if ( ($value->ens_prog == null || $value->ens_prog == $value->id_personnel) ){
+
+        	$v=true;
+			foreach ($r as $val) {
+			
+				if($val==$value->semaine_id)
+					{$v=false;}
+			}
+
+			if($v)
+        		{$r[count($r)]=$value->semaine_id;}
+        }
+        else{
+            //$value='';
+
+            unset($data[$i]);
+
+
+        }
+
+        $i++;
+     }
+
+	 //echo json_encode($data);
+     	$i=0;
+     	foreach ($r as $value) {
+     		$id_s[$i] =$value;
      		$condition = array('id_semaine' => $id_s[$i]);
-     		$data[$i]=$this->Impression->select_semaine($condition);
+     		$r[$i]=$this->Impression->select_semaine($condition);
      		$i+=1;
      	}
      	 //print_r($data);
-      echo json_encode($data);
+      echo json_encode($r);
 	}
 	
 	public function ens(){ 

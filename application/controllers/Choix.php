@@ -1,4 +1,4 @@
-<?php
+ <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Choix extends CI_Controller {
@@ -29,7 +29,9 @@ class Choix extends CI_Controller {
         $data['semestre']=$this->db->get('semestres')->result();
 $data['mentions']=$this->Mentions->select();
 $data['cycles']=$this->Mentions->select_cycle();
-	$this->load->view('template/index',$data);
+			$this->load->view('template/header.php',$data);
+			$this->load->view('template/salle.php',$data);
+			$this->load->view('template/footer.php',$data);
 	//$this->load->view('templates/header');
 	//$this->load->view('templates/contaner',$data);
     //$this->load->view('templates/footer');
@@ -39,13 +41,19 @@ $data['cycles']=$this->Mentions->select_cycle();
 	}
 
 	public function ch1(){
-		$id= $this->input->post('mention');
-		$condition=array('mention_id'=> $id);
-		$data['parcours']=$this->Parcours->select($condition);
-		$data1=$this->Parcours->select($condition);
-		$condition1=array('parcour_id'=> $data1[0]->id_parcour);
-		$data['niveau']=$this->Parcours->select_niv($condition1);
-		//print_r($data) ;
+		$id_mention= $this->input->post('mention');
+		$id_cycle= $this->input->post('cycle');
+		$condition=array('cycle_id'=> $id_cycle);
+		//$data['parcours']=$this->Parcours->select($condition);
+		//echo 'ee'.$id_cycle;
+		$data['parcours']=$this->Parcours->select_cycle_parcour($condition);
+		$data1=$this->Parcours->select_cycle_parcour(array('cycle_id'=> $id_cycle));
+		if ($data1[0]->mention_id == $id_mention) {
+			$condition1=array('parcour_id'=> $data1[0]->id_parcour);
+			$data['niveau']=$this->Parcours->select_niv($condition1);
+		}
+		
+		//print_r($data['parcours']) ;
 		echo json_encode($data);
 
 		
@@ -111,7 +119,9 @@ $data['cycles']=$this->Mentions->select_cycle();
         $data['semestre']=$this->db->get('semestres')->result();
         $data['cycles']=$this->Mentions->select_cycle();
 		$data['mentions']=$this->Mentions->select();
+			$this->load->view('template/header.php',$data);
 			$this->load->view('template/edition.php',$data);
+			$this->load->view('template/footer.php',$data);
 		} 
 
 	public function nouvelle_edition(){
@@ -124,10 +134,12 @@ $data['cycles']=$this->Mentions->select_cycle();
         $data['semestre']=$this->db->get('semestres')->result();
         $data['cycles']=$this->Mentions->select_cycle();
 		$data['mentions']=$this->Mentions->select();
+			$this->load->view('template/header.php',$data);
 			$this->load->view('template/nouvel_edit.php',$data);
+			$this->load->view('template/footer.php',$data);
 		} 
 
-	public function modification($sem,$niv){
+	public function modification($sem,$niv,$cycle){
 	//$id= $this->input->post('niv');
 		$id= $niv;
 	$this->db->where(array('id_niv_par'=> $niv));
@@ -146,8 +158,11 @@ $data['cycles']=$this->Mentions->select_cycle();
         $data['cycles']=$this->Mentions->select_cycle();
 		$data['mentions']=$this->Mentions->select();
 		$data['n']=$id;
+		$data['c']=$cycle;
 		$data['id_sem']=$sem;
+		$this->load->view('template/header.php',$data);
 		 $this->load->view('template/modif',$data);
+		 $this->load->view('template/footer.php',$data);
 	
 			}
 
@@ -159,7 +174,9 @@ $data['cycles']=$this->Mentions->select_cycle();
           $data['niv_par']=$this->Impression->select_niv_par();
           $data['enseignants']=$this->Impression_ens->select_enseignants();
           $data['departement']=$this->Impression->select_departement();
-			$this->load->view('template/salle.php',$data);
+          	$this->load->view('template/header.php',$data);
+          	$this->load->view('template/salle.php',$data);
+			$this->load->view('template/footer.php',$data);
 		} 
 
 	public function consult_Enseignant(){
@@ -170,8 +187,23 @@ $data['cycles']=$this->Mentions->select_cycle();
           $data['niv_par']=$this->Impression->select_niv_par();
           $data['enseignants']=$this->Impression_ens->select_enseignants();
           $data['departement']=$this->Impression->select_departement();
+          $this->load->view('template/header.php',$data);
 			$this->load->view('template/Enseignant.php',$data);
+			$this->load->view('template/footer.php',$data);
 		} 
+
+
+	public function notif(){
+		$data['annee']=$this->Impression->annees();
+		$data['cycles']=$this->Mentions->select_cycle();
+          $data['mentions']=$this->Mentions->select();
+         $data['niv_par']=$this->Impression->select_niv_par();
+         $data['departement']=$this->Impression->select_departement();
+         $this->load->view('template/header.php',$data);
+		 $this->load->view('template/notifications',$data);
+		 $this->load->view('template/footer.php',$data);
+	
+			}
 	
 
 	public function activ_plage(){
@@ -207,7 +239,48 @@ $data['cycles']=$this->Mentions->select_cycle();
 		}
 	}
 
-	
+	public function list_mention(){
+		$id= $this->input->post('cycle');
+		$condition=array('cycle_id'=> $id);
+		$data['mention']=$this->Mentions->select_cycle_mention($condition);
+		//print_r($data) ;
+
+		echo json_encode($data);
+
+		
+	} 
+
+
+	public function niveau_p(){
+		$id= $this->input->post('id_parcour');
+		$cycle= $this->input->post('cycle');
+		$condition=array('parcour_id'=> $id,'id_cycle'=> $cycle);
+
+			$this->db->select('*');
+            $this->db->from('niv_par');
+            $this->db->join('niveaux','niveaux.id_niveau=niv_par.niveau_id');
+            $this->db->join('cycles','cycles.id_cycle=niveaux.cycle_id');
+			$this->db->where($condition);
+		$data['niv']=$this->db->get()->result();
+		/*echo "<pre>";
+        print_r($data['niv']);
+        echo "</pre>";
+          echo $cycle;*/
+
+		echo json_encode($data);
+
+		
+	} 
+
+	public function fetch_sem()
+    {
+      
+          if($this->input->post('id_niveau'))
+          {
+           echo $this->Emploi->fetch_sem($this->input->post('id_niveau'));
+          }
+       
+    }
 	
 }
 

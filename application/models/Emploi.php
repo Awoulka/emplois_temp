@@ -215,5 +215,55 @@ class Emploi extends CI_Model {
         $this->db->update('semaines', $data);
         return TRUE;
         }
+
+        public function select_cycle($condition=array())
+        {   $this->db->select('*');
+            $this->db->from('cycle_parcour');
+            $this->db->join('parcours','parcours.id_parcour=cycle_parcour.parcour_id');
+            $this->db->join('cycles','cycles.id_cycle=cycle_parcour.cycle_id');         
+            $this->db->where($condition);
+                return $this->db->get()->result();
+        }
+
+        public function select_cycle_($condition=array())
+        {   $this->db->select('*');
+            $this->db->from('cycles');
+            $this->db->join('cycle_parcour','cycle_parcour.cycle_id=cycles.id_cycle');
+            $this->db->join('parcours','parcours.id_parcour=cycle_parcour.parcour_id');
+                     
+            $this->db->where($condition);
+                return $this->db->get()->result();
+        }
+
+
+        function fetch_sem($plage_id)
+     {
+
+      $this->db->select('*');
+      $this->db->from('semestres ');
+      $this->db->join('niveaux ','niveaux.id_niveau = semestres.niveau_id','LEFT');
+      $this->db->join('niv_par ','niv_par.niveau_id = niveaux.id_niveau','LEFT');
+      $this->db->where('id_niv_par', $plage_id);
+      $query = $this->db->get();
+      $output = '<option value="">Select un semestre</option>';
+      foreach($query->result() as $row)
+      {
+       $output .= '<option value="'.$row->id_semestre.'">'.$row->semestre.'</option>';
+      }
+      return $output;
+     }
+
+     function fetch_sem_($plage_id)
+     {
+
+      $query="SELECT * FROM semestres , semestre_niv , niv_par WHERE semestres.id_semestre=semestre_niv.semestre_id AND semestre_niv.niveau_id=niv_par.niveau_id AND niv_par.id_niv_par = ? ";
+      $query=$this->db->query( $query ,  $plage_id);
+
+      if ($query->num_rows() > 0) {
+            return $query->result();
+        }else {
+            return [];
+        }
+     }
     }
 ?>                                        

@@ -40,7 +40,8 @@ class Planification extends CI_Model {
         {   
             $this->db->select('*');
             $this->db->from('personnels');
-            $this->db->join('enseignes','enseignes.personnel_id=personnels.id_personnel');    
+            $this->db->join('enseignes','enseignes.personnel_id=personnels.id_personnel');
+            $this->db->join('annee_academiques','annee_academiques.id_annee=enseignes.annee_id');    
             $this->db->where($condition);
                 return $this->db->get()->result();
         }

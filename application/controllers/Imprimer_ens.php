@@ -25,8 +25,12 @@ class Imprimer_ens extends CI_Controller {
          
            $debut_semaine=$this->Impression_ens->select_semaine(array("id_semaine"=> $id_semaine));
            $date=$debut_semaine[0]->debut;
-          $data['planifications']=$this->Impression_ens->planification_enseignant(array("debut"=> $date,"id_personnel"=>$id_personnel));
+          $data['planifications']=$this->Impression_ens->planification_enseignant(array("semaines.debut"=> $date,"id_personnel"=>$id_personnel,"annee_academiques.status" => "en cours",'semaine_status' =>4));
 
+          // echo "<pre>";
+          // print_r( $data['planifications']);
+          // echo "</pre>";
+          // die();
   $data['jour']=$this->Impression_ens->select_jour();
   $i=0;
   foreach ($data['jour'] as $value) {
@@ -38,7 +42,13 @@ class Imprimer_ens extends CI_Controller {
   }
  
    $h=0;
+   $i=0;
+   $heure_debut=[];
+   $heure_fin=[];
     foreach ($data['planifications'] as $value) {
+        
+        if ($value->type_planing != "BIBLIOTHEQUE" && $value->type_planing != "Congé" && $value->type_planing != "INVEST_HUMAIN"  && ( $value->ens_prog == null || $value->ens_prog == $value->id_personnel )   ){
+        
             $value->plages=$this->Impression_ens->select_plage(array("id_plage"=> $value->plage_id));
             $i=$value->jour_id;
            // somme heure par jour
@@ -74,6 +84,16 @@ class Imprimer_ens extends CI_Controller {
                 }
             }
 
+        }
+        else{
+            //$value='';
+
+            //unset($data['planifications'][$i]);
+
+
+        }
+
+        $i++;
      }
          foreach ($data['jour'] as $row) {
            $row->max_heure=$fin_jour[$row->id_jour];
@@ -120,7 +140,7 @@ class Imprimer_ens extends CI_Controller {
 
 			$id= array('id_salle' => $value->salle_id);
         	$data1=$this->Impression_ens->select_salle($id);
-        	 $value->salle=$data1[0]->nom_salle."(". $data1[0]->intitule_salle.")";
+        	 $value->salle=$data1[0]->nom_salle;
  
 
 			$id= array('id_ec' => $value->ec_id);
@@ -141,6 +161,7 @@ class Imprimer_ens extends CI_Controller {
         	$data_m=$this->Mentions->select($id);
 
           $value->mension=$data_m;
+          $value->niv=$data_niv[0]->rendu;
         	$data['semaine']=$data_s;
         	$data['annee']=$data_a;
         	$data['niv']=$data_niv;
@@ -150,10 +171,10 @@ class Imprimer_ens extends CI_Controller {
     //
 	}
   
-   // echo "<pre>";      
-   //  print_r($data);
-   //  echo "</pre>";
-    $this->pdf->generate('templates/vue_ens',$data);
+    //echo "<pre>";      
+     //print_r($data);
+     //echo "</pre>";
+   $this->pdf->generate('templates/vue_ens',$data);
        $this->load->view('templates/vue_ens',$data);
        
 

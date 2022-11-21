@@ -37,7 +37,7 @@
   <div class="limiter">
     <div class="container-login100 bg-container">
       <div class="wrap-login100">
-            <a class="txt1" title="Accueil" href="http://iutgest.com/sigi/">
+            <a class="txt1" title="Accueil" href="http://localhost/sigi/">
               <span class="fa fa-home" style="font-size: 20px"></span>
             </a>
         <form method="post" action="<?= base_url('authentification/connexion'); ?>" class="login100-form validate-form">

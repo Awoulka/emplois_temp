@@ -115,7 +115,8 @@ function creer_tableau_modif(tableau,tableau_entete,tableau_emploie){
                              $("#"+tableau_emploie).fadeIn(1000);
                              
             $("td.td").click(function(){
-
+               $("select.EC,select.UE,select.Enseignant,select.Semestres,select.Salle,select.groupe,.evolution,.heure").css("border-color","gray");
+       
 
                 aaa=$(this).attr('id');
                 index=$(this).attr('id');
@@ -127,10 +128,35 @@ function creer_tableau_modif(tableau,tableau_entete,tableau_emploie){
                     $("input[name=optradio]").removeAttr('checked'); 
                     $(".Salle option").remove();
 
-                    
+                    $("input[name=optradio]").removeAttr('checked');
+                $("input[name=select_ev]").removeAttr('checked',false); 
+                 $("input.ev").attr('checked',true);
+
+                     $("input.evolution").val('');
+            $("input.heure").val('');
                                                       //$("select.Semestres").children(".Semestres option[id="+tableau_valeurs_modif[aaa[3]][aaa[4]][10]+"]").attr("selected","selected");
-                                                     
-                $.post(
+                      
+                       if (tableau_id_modif[aaa[3]][aaa[4]][5]!=null && tableau_id_modif[aaa[3]][aaa[4]][5]!=0 ) {
+             $.post(
+                           base_url + "Enregistrement/sem",
+                           { UE : tableau_id_modif[aaa[3]][aaa[4]][5],niv:$n},
+                           function(data){
+                             //alert(data.sem.id_semestre);
+                             $(".Semestres option").remove();
+                             for (var i = 0; data.semestre.length - 1 >= i; i++) {
+
+                                if (data.sem.id_semestre==data.semestre[i].id_semestre) {
+
+                                    $("select.Semestres").append("<option id="+data.semestre[i].id_semestre+" selected>"+ 
+                                        data.semestre[i].semestre+"</option>");
+                                }
+                                else{
+                                      $("select.Semestres").append("<option id="+data.semestre[i].id_semestre+">"+ 
+                                        data.semestre[i].semestre+"</option>");
+                                  }
+                                    }
+
+                                     $.post(
                           base_url + "Choix_planification/ch",
                           { PN : $n,
                             Semestre : $("select.Semestres").children(".Semestres option:selected").attr('id')},
@@ -157,7 +183,7 @@ function creer_tableau_modif(tableau,tableau_entete,tableau_emploie){
                                                       $("select.UE").children(".UE option[id="+tableau_id_modif[aaa[3]][aaa[4]][5]+"]").attr("selected","selected");
                                                       
             $.post(
-                                    base_url + "Choix_planification/ch1",
+                                    base_url + "Choix_planification/ch1_td",
                                     { UE : $("select.UE").children(".UE option:selected").attr('id')},
                                     function(data){
                                       //alert(aaa[3]);
@@ -168,7 +194,35 @@ function creer_tableau_modif(tableau,tableau_entete,tableau_emploie){
 
                                               $("select.EC").children(".EC option[id="+tableau_id_modif[aaa[3]][aaa[4]][3]+"]").attr("selected","selected");      
                                            
-                                           
+                                           $(".ens_absent").html("<i style=''></i>");
+                                           for (var i = 0; data.enseignant.length - 1 >= i; i++) {
+
+                                    if (tableau_id_modif[aaa[3]][aaa[4]][10]==data.enseignant[i].id_personnel) {
+                                         $("select.Enseignant").append("<option selected id='"+data.enseignant[i].id_personnel+"'>"+data.enseignant[i].nom_prenom+"</option>");
+                                    }else {
+                                         $("select.Enseignant").append("<option id='"+data.enseignant[i].id_personnel+"'>"+data.enseignant[i].nom_prenom+"</option>");
+                                    }
+                                    
+                                    }
+
+                                    if (data.enseignant.length > 1) {
+
+                                         if (tableau_id_modif[aaa[3]][aaa[4]][10]==-1) {
+                                         $("select.Enseignant").append("<option selected id="+-1+">Tous les enseignants</option>");
+                                         
+                                    }else {
+                                         $("select.Enseignant").append("<option id="+-1+">Tous les enseignants</option>");
+                                         
+                                    }
+
+
+                                    }
+
+                                    if (data.enseignant.length == 0) {
+
+                                         //$("select.Enseignant").append("<option id='"+null+"'>Aucun enseignant effecté !!</option>");
+                                         $(".ens_absent").append("<i style='color: blue;'>( Aucun enseignant effecté pour l'année en cour veuillez affecter avant de programmer !!!! )</i>");
+                                    }
                          },
                         "json"
             );
@@ -180,11 +234,11 @@ function creer_tableau_modif(tableau,tableau_entete,tableau_emploie){
 
                                               
                                                        
-                                                       $("select.Enseignant").append("<option id=>"+tableau_valeurs_modif[aaa[3]][aaa[4]][5]+"</option>");
+                                                      // $("select.Enseignant").append("<option id=>"+tableau_valeurs_modif[aaa[3]][aaa[4]][5]+"</option>");
                                                        
                                           if (tableau_valeurs_modif[aaa[3]][aaa[4]][6]!=tableau_valeurs_modif[aaa[3]][aaa[4]][5]) {
 
-                                                    $("select.Enseignant").append("<option id=>"+tableau_valeurs_modif[aaa[3]][aaa[4]][6]+"</option>");
+                                                    //$("select.Enseignant").append("<option id=>"+tableau_valeurs_modif[aaa[3]][aaa[4]][6]+"</option>");
                                                   }
 
                                                    $("select.heure").append("<option id=>"+tableau_valeurs_modif[aaa[3]][aaa[4]][7]+"</option>");
@@ -216,6 +270,157 @@ function creer_tableau_modif(tableau,tableau_entete,tableau_emploie){
                          },
                         "json"
                 );
+                                  
+                },
+               "json"
+   );}
+
+else
+{
+
+$.post(
+                           base_url + "Enregistrement/sem_",
+                           { niv:$n},
+                           function(data){
+                             //alert(data.sem.id_semestre);
+                             $(".Semestres option").remove();
+                             for (var i = 0; data.semestre.length - 1 >= i; i++) {
+                              //alert(data.semestre[i].semestre);
+                              
+                                      $("select.Semestres").append("<option id="+data.semestre[i].id_semestre+">"+ 
+                                        data.semestre[i].semestre+"</option>");
+                                  
+                                    }
+
+
+
+
+                                    $.post(
+                          base_url + "Choix_planification/ch",
+                          { PN : $n,
+                            Semestre : $("select.Semestres").children(".Semestres option:selected").attr('id')},
+                          function(data){
+
+                                                 //alert(data);
+                                          $(".UE option").remove();
+
+                                          $("select.UE").append("<option id='nul'></option>");
+                                           
+                                          for (var i = 0; data.ue.length - 1 >= i; i++) {
+                                               $("select.UE").append("<option id="+data.ue[i].id_ue+">"+ data.ue[i].intitule_ue+"</option>");
+                                             }
+
+                                          for (var i = 0; data.salle.length - 1 >= i; i++) {
+                                               $("select.Salle").append(
+                                                                          "<option id="+data.salle[i].id_salle+">"+data.salle[i].nom_salle+"("+data.salle[i].intitule_salle+")</option>"
+                                                                          );
+                                           }
+
+                                         /*  if (tableau_valeurs_modif[aaa[3]][aaa[4]][0]!=null) {
+                                            
+
+                                                      $("select.UE").children(".UE option[id="+tableau_id_modif[aaa[3]][aaa[4]][5]+"]").attr("selected","selected");
+                                                      
+            $.post(
+                                    base_url + "Choix_planification/ch1_td",
+                                    { UE : $("select.UE").children(".UE option:selected").attr('id')},
+                                    function(data){
+                                      //alert(aaa[3]);
+                                           $(".EC option").remove();
+                                           for (var i = 0; data.ec.length - 1 >= i; i++) {
+                                               $("select.EC").append("<option id="+data.ec[i].id_ec+">"+data.ec[i].code_ec+"("+data.ec[i].intitule_ec+")"+"</option>");
+                                              }
+
+                                              $("select.EC").children(".EC option[id="+tableau_id_modif[aaa[3]][aaa[4]][3]+"]").attr("selected","selected");      
+                                           
+                                           $(".ens_absent").html("<i style=''></i>");
+                                           for (var i = 0; data.enseignant.length - 1 >= i; i++) {
+
+                                    if (tableau_id_modif[aaa[3]][aaa[4]][10]==data.enseignant[i].id_personnel) {
+                                         $("select.Enseignant").append("<option selected id='"+data.enseignant[i].id_personnel+"'>"+data.enseignant[i].nom_prenom+"</option>");
+                                    }else {
+                                         $("select.Enseignant").append("<option id='"+data.enseignant[i].id_personnel+"'>"+data.enseignant[i].nom_prenom+"</option>");
+                                    }
+                                    
+                                    }
+
+                                    if (data.enseignant.length > 1) {
+
+                                      if (tableau_id_modif[aaa[3]][aaa[4]][10]==-1) {
+                                         $("select.Enseignant").append("<option selected id="+-1+">Tous les enseignants</option>");
+                                         
+                                    }else {
+                                         $("select.Enseignant").append("<option id="+-1+">Tous les enseignants</option>");
+                                         
+                                    }
+
+                                         
+
+
+                                    }
+
+                                    if (data.enseignant.length == 0) {
+
+                                         //$("select.Enseignant").append("<option id='"+null+"'>Aucun enseignant effecté !!</option>");
+                                         $(".ens_absent").append("<i style='color: blue;'>( Aucun enseignant effecté pour l'année en cour veuillez affecter avant de programmer !!!! )</i>");
+                                    }
+                                           
+                         },
+                        "json"
+            );
+*/
+
+                                                  //$("select.EC").append("<option id="+tableau_id[aaa[3]][aaa[4]][3]+">"+tableau_valeurs[aaa[3]][aaa[4]][3]+"</option>");
+
+                                                  
+
+                                              
+                                                       
+                                                       //$("select.Enseignant").append("<option id=>"+tableau_valeurs_modif[aaa[3]][aaa[4]][5]+"</option>");
+                                                       
+                                          if (tableau_valeurs_modif[aaa[3]][aaa[4]][6]!=tableau_valeurs_modif[aaa[3]][aaa[4]][5]) {
+
+                                                    //$("select.Enseignant").append("<option id=>"+tableau_valeurs_modif[aaa[3]][aaa[4]][6]+"</option>");
+                                                  }
+
+                                                   //$("select.heure").append("<option id=>"+tableau_valeurs_modif[aaa[3]][aaa[4]][7]+"</option>");
+
+                                                   $("select.Salle").children(".Salle option[id="+tableau_id_modif[aaa[3]][aaa[4]][2]+"]").attr("selected","selected");
+
+                                                            //alert("aaaaa");
+                                                            //$(".evolution option").remove();
+                                                              //d=parseInt(tableau_id_modif[aaa[3]][aaa[4]][4],10)-parseInt(nbh[0]+nbh[1]);
+                                                              //if (d<0) {d=0;}
+                                                                //alert(parseInt(nbh[0]+nbh[1]));
+                                                            
+                                                                //$("select.evolution").append("<option>"+d+"</option>");
+                                                  /*$(".evolution option").remove();
+                                                  $("select.evolution").append("<option>"+tableau_id[aaa[3]][aaa[4]][4]+"</option>");*/
+                                             
+                                                       
+                                                        
+                                              
+                                             
+
+                                                   
+                                         // }
+
+                                          
+
+
+                       
+                         },
+                        "json"
+                );
+                                  },
+                                  'json'
+                                  );
+
+
+
+         
+}                               
+             
               
                    
 
@@ -239,128 +444,316 @@ function creer_tableau_modif(tableau,tableau_entete,tableau_emploie){
 
                                      
           
+
+ if (tableau_valeurs_modif[aaa[3]][aaa[4]][0]!= null) {
+//alert("eee");
+
+        $(".groupe option").remove();
+
+for (var i = 0; 8 >= i; i++) {
+
+
+
+          if (tableau_valeurs_modif[aaa[3]][aaa[4]][10]==i) {
+            if (i==0) {
+                $("select.groupe").append("<option value="+tableau_valeurs_modif[aaa[3]][aaa[4]][10]+" selected>"+"pas de groupe"+"</option>");
+
+            }
+            else{
+
+            $("select.groupe").append("<option value="+tableau_valeurs_modif[aaa[3]][aaa[4]][10]+" selected>"+tableau_valeurs_modif[aaa[3]][aaa[4]][10]+"</option>");
+        }
+          }
+          else{
+
+            if (i==0) {
+
+            $("select.groupe").append("<option value="+i+">"+"pas de groupe"+"</option>");
+   
+
+             }
+            else
+             {
+            $("select.groupe").append("<option value="+i+">"+i+"</option>");
+        
+                 }
+
+          }
+         }
+
+        }
+
+         if (tableau_valeurs_modif[aaa[3]][aaa[4]][11]!=0) {
+
+            $("input.evolution").val(tableau_valeurs_modif[aaa[3]][aaa[4]][4]);
+            $("input.heure").val(tableau_valeurs_modif[aaa[3]][aaa[4]][11]);
+
+            $("input[name=select_ev]").removeAttr('checked',false); 
+           //$("input.ev").attr('checked',true);
+        }
          });
+
+
+
 
 
 }
 
 function evolution(tableau,matiere){
 
-       ev=0;
-       v=0;
-      
-              $.ajax({
 
-                  
-                  url:base_url + "Choix_planification/evolution",
-                  type: "POST",
-                  async: false,
+ev=-1;
+v=0;
+a=-1;
+b=-1;
 
-                  data : {EC : matiere},
-                  dataType: "json",
-                  success:function(data){
+for (var i = 1; i <7 ; i++) {
+                 
+            for (var j = 1; j < tableau_nbh_modif.length ; j++) {
 
-                               //alert(data[0].evolution);
 
-                                          if (data[0].evolution!=null ) {
-                                                ev=parseInt(data[0].evolution,10);
-                                              }
-                                           else{
-                                                ev=0;
-                                                }
-                           },
-                  error:function(){
-                    alert("erreur de serveur ;(");
-                  }
-                });
+                if ((tableau[i][j] !=null && tableau[i][j][3]==matiere)  && tableau[i][j][4]!=0 && $("input[name=select_ev]:checked").val()!="manuel" && tableau_id_modif[i][j][9]!=0) {
+                   
+                    ev=tableau_valeurs_modif[i][j][4];
+                    a=i;
+                    b=j;
+                    j=tableau_nbh_modif.length;
+                    i=7;
+
+                }
+             }
+         }
+
+         if (ev==-1) {
+
+            $.ajax({
+
+         
+         url:base_url + "Choix_planification/evolution",
+         type: "POST",
+         async: false,
+
+         data : {EC : matiere},
+         dataType: "json",
+         success:function(data){
+
+                      //alert(data+"aaa");
+
+                                 if (data[0].evolution!=null ) {
+                                       ev=parseInt(data[0].evolution,10);
+                                     }
+                                  else{
+                                       ev=0;
+                                       }
+                  },
+         error:function(){
+           alert("erreur de serveur ;(");
+         }
+       });
+
+         }
+//alert(ev);
+     
+for (var i = 1; i <7 ; i++) {
+                 
+            for (var j = 1; j < tableau_nbh_modif.length ; j++) {
+             //alert(tableau_valeurs_[i][j][4]);
+             
+             if ((a != i || b != j) && (tableau[i][j] !=null && tableau[i][j][3]==matiere)  && tableau[i][j][4]!=0 && $("input[name=select_ev]:checked").val()!="manuel") {
               
-    for (var i = 1; i <7 ; i++) {
+                   //alert(tableau_valeurs_[i][j][4]);
+                         
                           
-                     for (var j = 1; j < tableau_nbh_modif.length ; j++) {
-                      
-                      
-                      if ((tableau[i][j] !=null && tableau[i][j][3]==matiere)  && tableau[i][j][4]!=0 ) {
-                       
-                            
-                                  
-                                   
-                                   tableau_id_modif[i][j][4]=ev+parseInt(tableau_nbh_modif[j][0]+tableau_nbh_modif[j][1])
-                                   tableau_valeurs_modif[i][j][4]=ev+parseInt(tableau_nbh_modif[j][0]+tableau_nbh_modif[j][1])
-                                   ev=ev+parseInt(tableau_nbh_modif[j][0]+tableau_nbh_modif[j][1]); 
-                                   if (tableau_valeurs_modif[i][j][9]!=null) { 
-                                    Remplir(tableau_valeurs_modif,i,j,"ppp"+i+j);
-                                  }
-                                    
-                   }
-                   }
-        }
+                          tableau_id_modif[i][j][4]=ev+parseInt(tableau_nbh_modif[j][0]+tableau_nbh_modif[j][1])
+                          tableau_valeurs_modif[i][j][4]=ev+parseInt(tableau_nbh_modif[j][0]+tableau_nbh_modif[j][1])
+                          ev=ev+parseInt(tableau_nbh_modif[j][0]+tableau_nbh_modif[j][1]); 
+                          if (tableau_valeurs_modif[i][j][9]!=null) { 
+                           Remplir(tableau_valeurs_modif,i,j,"ppp"+i+j);
+                         }
+                           
+          }
+          }
+}
 
+//alert('eeeeee');
 }
 
 
 function Remplir(tableau,ligne,colonne,index0){
 
 
-                                if (tableau[ligne][colonne][9]=="BIBLIOTHEQUE" || 
-                                    tableau[ligne][colonne][9]=="Congé" || 
-                                    tableau[ligne][colonne][9]=="INVESTISSEMENT HUMAIN") {
-                                            $("#"+index0).html("<center>"+"<font size=5 >"+tableau[ligne][colonne][9]+"</font>"+"</center>");
-                                          }
-                                else{ 
-                                            if (tableau[ligne][colonne][6]!='' && tableau[ligne][colonne][6]!=tableau[ligne][colonne][5] ) {
-                                                ens2=" / "+tableau[ligne][colonne][6];
-                                            }
+                       if (tableau[ligne][colonne][9]=="BIBLIOTHEQUE" || 
+                           tableau[ligne][colonne][9]=="Congé" || 
+                           tableau[ligne][colonne][9]=="INVEST_HUMAIN"|| 
+                           tableau[ligne][colonne][9]=="PROJET") {
+                                   $("#"+index0).html("<center>"+"<font size=5 >"+tableau[ligne][colonne][9]+"</font>"+"</center>");
+                                 }
+                       else{ 
+
+
+                                  ens2=tableau[ligne][colonne][5];
+                        if (ens2==null) {
+
+                            ens2='<p style="color: red;">Aucun enseignant affecté à cette matière!!!!</p>'
+                        }
+                                   /*if (tableau[ligne][colonne][6]!='' && tableau[ligne][colonne][6]!=tableau[ligne][colonne][5] ) {
+                                       ens2=" / "+tableau[ligne][colonne][6];
+                                   }
+                                   else{
+                                     ens2="";
+
+                                   }*/
+
+                                     if (tableau[ligne][colonne][9]=="Cour") {
+
+                                        if (tableau[ligne][colonne][10] != 0) {
+
+                                            if (tableau[ligne][colonne][11]==0) {
+
+                                            $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+ens2+"</font>"
+                                        +"</div>"
+                                        +"<div style='float: left;'>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                        "<div style='float: ;'>"+"<font size=3>&nbsp;Groupe "+tableau[ligne][colonne][10]+"</div>"+
+                                        "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
+                                       +"</center>");}
+
                                             else{
-                                              ens2="";
 
+                                                $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+ens2+"</font>"
+                                        +"</div>"
+                                        +"<div style='float: left;'>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                        "<div style='float: ;'>"+"<font size=3>&nbsp;Groupe "+tableau[ligne][colonne][10]+"</div>"+
+                                        "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][11]+"</font>"+"</div>"
+                                       +"</center>");
+                                            }
+                                        }
+                                        else{
+
+                                            
+
+                                            if (tableau[ligne][colonne][11]==0) {
+
+                                            $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+ens2+"</font>"
+                                        +"</div>"
+                                        +"<div style='float: left;'>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                        "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
+                                       +"</center>");
+                                        }
+
+                                            else{
+
+                                               $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+ens2+"</font>"
+                                        +"</div>"
+                                        +"<div style='float: left;'>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                        "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][11]+"</font>"+"</div>"
+                                       +"</center>");
+                                            }
+                                        }
+
+                                       
+                                       //alert(index0);
+                                     }
+
+                                     else{
+                                       if (tableau[ligne][colonne][9]=="TP"      || 
+                                           tableau[ligne][colonne][9]=="TPE"     ||
+                                           tableau[ligne][colonne][9]=="TD"      || 
+                                           tableau[ligne][colonne][9]=="CC"      
+                                             ) {
+                                        if (tableau[ligne][colonne][10] != 0) {
+
+                                            
+
+                                            if (tableau[ligne][colonne][11]==0) {
+
+                                            $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
+                                        +"</div>"
+                                       +"<div style='float: left;''>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                       "<div style='float: ;'>"+"<font size=3>&nbsp;Groupe "+tableau[ligne][colonne][10]+"</div>"+
+                                       "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
+                                       +"</center>");
+                                        }
+
+                                            else{
+
+                                               $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
+                                        +"</div>"
+                                       +"<div style='float: left;''>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                       "<div style='float: ;'>"+"<font size=3>&nbsp;Groupe "+tableau[ligne][colonne][10]+"</div>"+
+                                       "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][11]+"</font>"+"</div>"
+                                       +"</center>");
                                             }
 
-                                              if (tableau[ligne][colonne][9]=="Cour") {
+                                        }
+                                        else{
 
-                                                $("#"+index0).html("<center>"
-                                                  +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
-                                                  +"</div>"+
-                                                 "<div >"+"<font size=2>"+tableau[ligne][colonne][5]+ens2+"</font>"
-                                                 +"</div>"
-                                                 +"<div style='float: left;'>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+"<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
-                                                +"</center>");
-                                                //alert(index0);
-                                              }
-
-                                              else{
-                                                if (tableau[ligne][colonne][9]=="TP"      || 
-                                                    tableau[ligne][colonne][9]=="TPE"     ||
-                                                    tableau[ligne][colonne][9]=="TD"      || 
-                                                    tableau[ligne][colonne][9]=="CC"      
-                                                      ) {
-                                                $("#"+index0).html("<center>"
-                                                  +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
-                                                  +"</div>"+
-                                                 "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
-                                                 +"</div>"
-                                                +"<div style='float: left;''>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+"<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
-                                                +"</center>");
-                                                }
-
-                                                else{
-                                                  $("#"+index0).html("<center>"
-                                                  +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
-                                                  +"</div>"+
-                                                 "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
-                                                 +"</div>"
-                                                 +"<div >"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"
-                                                +"</center>");
-
-                                                }
+                                           
 
 
-                                              }
-                                            
-                                          }
+                                             if (tableau[ligne][colonne][11]==0) {
 
-                                        
-        }; 
+                                            $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
+                                        +"</div>"
+                                       +"<div style='float: left;''>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                       "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][7]+"</font>"+"</div>"
+                                       +"</center>");
+                                        }
 
+                                            else{
+
+                                               $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
+                                        +"</div>"
+                                       +"<div style='float: left;''>"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"+
+                                       "<div style='float: right;'>"+tableau[ligne][colonne][4]+"/"+tableau[ligne][colonne][11]+"</font>"+"</div>"
+                                       +"</center>");
+                                            }
+                                        }
+                                       
+                                       }
+
+
+                                       else{
+                                         $("#"+index0).html("<center>"
+                                         +"<div >"+"<font size=2>"+tableau[ligne][colonne][3]+"</font>"
+                                         +"</div>"+
+                                        "<div >"+"<font size=2>"+tableau[ligne][colonne][9]+"</font>"
+                                        +"</div>"
+                                        +"<div >"+"<font size=2>"+tableau[ligne][colonne][2]+"</div>"
+                                       +"</center>");
+
+                                       }
+
+
+                                     }
+                                   
+                                 }
+
+                               
+}; 
 
 
         
@@ -379,7 +772,7 @@ function planifications(id_semaine,table,table_entete){
                   data : {id_s:id_semaine,niv: $n},
                   dataType: "json",
                   success:function(data){
-                    
+                    //alert(data.semaine[0].semestre[0].id_semestre);
 tableau_d_modif.length=0;
 for (var i = 1; i <7 ; i++) {
   //alert("i="+i);
@@ -418,10 +811,16 @@ for (var i = 1; i <7 ; i++) {
                $(".semaine_modif option").remove();
 
                   for (var i = 0; data.semestre.length - 1 >= i; i++) {
+
+                    //alert(data.semestre[i].id_semestre +"  "+ data.semaine[0].semestre[0].id_semestre);
                     
-                   
+                   if (data.semestre[i].id_semestre == data.semaine[0].semestre[0].id_semestre) {
+                      $("select.semestre_modif").append("<option selected id="+data.semestre[i].id_semestre+" >"+ data.semestre[i].semestre+"</option>");
+                      }
+                    else{
+
                       $("select.semestre_modif").append("<option id="+data.semestre[i].id_semestre+">"+ data.semestre[i].semestre+"</option>");
-                      
+                    }
                   }
 
                   
@@ -439,7 +838,7 @@ for (var i = 1; i <7 ; i++) {
 
                 if (data!= null) {
                   //alert(data.semaine[0].numero);
-             $("select.semaine_modif").append("<option id=''>"+(parseInt(data.semaine[0].numero,10)+1)+"</option>");
+             $("select.semaine_modif").append("<option id=''>"+(parseInt(data.semaine[0].numero,10))+"</option>");
                 d=data.semaine[0].debut;
                 f=data.semaine[0].fin;
                      mois=[" ","janvier","fevrier","mars","avril","mai","juin","juillet","auout","septembre","octobre","novembre","decembre"];
@@ -481,24 +880,105 @@ for (var i = 1; i <7 ; i++) {
                 ens="";
 
               }
+
+              if (data.planifications[i].ens_prog==null) {
               
+              ens_p=-1;
+            }
+            else{
+
+              ens_p=data.planifications[i].ens_prog;
+            }
+
+            if (data.planifications[i].heure_definit==null) {
               
-             tableau_id_modif[data.planifications[i].num_jour][data.planifications[i].num_plage]=[tableau_id_jour_modif[data.planifications[i].num_jour-1],tableau_d_modif[data.planifications[i].num_plage-1][3],data.planifications[i].salle_id,data.planifications[i].ec_id,data.planifications[i].evolution,data.planifications[i].ue[0].id_ue,data.planifications[i].type_planing,tableau_d_modif[0][4]];
+              h_d=0;
+            }
+            else{
+
+              h_d=data.planifications[i].heure_definit;
+            }
+              //alert(h_d);
+             tableau_id_modif[data.planifications[i].num_jour][data.planifications[i].num_plage]=
+             [tableau_id_jour_modif[data.planifications[i].num_jour-1],
+             tableau_d_modif[data.planifications[i].num_plage-1][3],
+             data.planifications[i].salle_id,
+             data.planifications[i].ec_id,
+             data.planifications[i].evolution,
+             data.planifications[i].ue[0].id_ue,
+             data.planifications[i].type_planing,
+             tableau_d_modif[0][4],
+             data.planifications[i].groupe,
+             h_d,
+             ens_p
+             ];
 
               ec=data.planifications[i].ec[0].code_ec+"("+data.planifications[i].ec[0].intitule_ec+")";
 
 
           if (data.planifications[i].type_planing=="BIBLIOTHEQUE" ||
               data.planifications[i].type_planing=="Congé" ||
-              data.planifications[i].type_planing=="INVESTISSEMENT HUMAIN") {
+              data.planifications[i].type_planing=="INVEST_HUMAIN"||
+              data.planifications[i].type_planing=="PROJET") {
 
               ensei="";
               ens="";
             }
           else{
-            ensei=data.planifications[i].enseignant[0].nom_prenom;
+                ensei="";
+                //ensei=data.planifications[i].enseignant[0].nom_prenom;
+                
+                if (data.planifications[i].ens_prog==null) {
+
+
+                for (var j = 0; data.planifications[i].enseignant.length - 1 >= j; j++) {
+                    if (j==0) {
+                  ensei+=data.planifications[i].enseignant[j].nom_prenom;
+                    }
+                    else{
+
+                      ensei+=" / "+data.planifications[i].enseignant[j].nom_prenom;
+                    }
+
+                }
+              }
+                else{
+                  
+                  for (var k = 0; data.planifications[i].enseignant.length - 1 >= k; k++) {
+                  if (data.planifications[i].enseignant[k].id_personnel==data.planifications[i].ens_prog) {
+                    
+                  ensei=data.planifications[i].enseignant[k].nom_prenom;
+                   
+                     
+                    }
+                    
+                }
+
+                
+                
+              }
+
+
+               //alert(ensei); 
+
+                
+              
+
+
           }
-            tableau_valeurs_modif[data.planifications[i].num_jour][data.planifications[i].num_plage]=[tableau_id_jour_modif[data.planifications [i].num_jour-1],tableau_d_modif[data.planifications[i].num_plage-1][3],data.planifications[i].salle,ec,data.planifications[i].evolution,ensei,ens,data.planifications[i].heure,data.planifications[i].ue[0].intitule_ue,data.planifications[i].type_planing,data.planifications[i].semestre[0].id_semestre];
+            tableau_valeurs_modif[data.planifications[i].num_jour][data.planifications[i].num_plage]=
+            [tableau_id_jour_modif[data.planifications [i].num_jour-1],
+            tableau_d_modif[data.planifications[i].num_plage-1][3],
+            data.planifications[i].salle,
+            ec,
+            data.planifications[i].evolution,
+            ensei,
+            ens,
+            data.planifications[i].heure,
+            data.planifications[i].ue[0].intitule_ue,
+            data.planifications[i].type_planing,
+            data.planifications[i].groupe,
+            data.planifications[i].heure_definit];
            }
 
 
@@ -577,15 +1057,15 @@ $("#choix_date_ok_modif").click(
 
             if (tableau_semaine[1]!=deb_s) {
             //alert($("select.sem").children(".sem option:selected").val());
-              tableau_semaine[0]=$("select.sem").children(".sem option:selected").val();
+              tableau_semaine[0]=$("select.semaine_modif").children(".semaine_modif option:selected").val();
               tableau_semaine[1]=deb_s;
               tableau_semaine[2]=fin_s;
-              tableau_semaine[3]="<?php foreach ($annee as $row) {echo $row->id_annee;} ?>";
+              tableau_semaine[3]=$id_annee;
               tableau_semaine[4]=tableau_nbh_modif.length;
               tableau_semaine[5]=0;
-              tableau_semaine[6]=$("select.Semestre").children(".Semestre option:selected").attr('id');
+              tableau_semaine[6]=$("select.semestre_modif").children(".semestre_modif option:selected").attr('id');
 
-             
+             //alert(tableau_semaine);
             }
             
       });
@@ -605,12 +1085,17 @@ $("#choix_date_ok_modif").click(
 $("#sortir,#close").click(function(){
         $(".choix_dt_modif").css("display","none");
           $(".choix").css("display","none");
-          $("select.EC,select.UE,select.Enseignant").css("border-color","white");
+          $("select.EC,select.UE,select.Enseignant").css("border","1px solid #ced4da");
            $(".radio").css("border","none");
       });
 
+$("select.semestre_modif").change(function(){
 
+  tableau_semaine[6]=$("select.semestre_modif").children(".semestre_modif option:selected").attr('id');
+
+});
 $("select.Semestres").change(function(){
+
 
 
               $(".Enseignant option").remove();
@@ -619,7 +1104,8 @@ $("select.Semestres").change(function(){
                     $(".Salle option").remove();
                     $(".heure option").remove();
                     $(".evolution option").remove();
-                    
+                    $(".ens_absent").html("<i style=''></i>");
+                                           
                 $.post(
                           base_url + "Choix_planification/ch",
                           { PN : $n,
@@ -666,11 +1152,29 @@ $(".UE").change(function(){
                                            $(".heure option").remove();
 
 
+                                           $(".ens_absent").html("<i style=''></i>");
                                            for (var i = 0; data.enseignant.length - 1 >= i; i++) {
-                                       //alert(data);
-                    //$(".b").html(data); 
-                            $("select.Enseignant").append("<option id="+data.enseignant[i].id_personnel+">"+ data.enseignant[i].nom_prenom+"</option>");
-                                             }
+
+                                    if (tableau_id_modif[aaa[3]][aaa[4]][10]==data.enseignant[i].id_personnel) {
+                                         $("select.Enseignant").append("<option selected id='"+data.enseignant[i].id_personnel+"'>"+data.enseignant[i].nom_prenom+"</option>");
+                                    }else {
+                                         $("select.Enseignant").append("<option id='"+data.enseignant[i].id_personnel+"'>"+data.enseignant[i].nom_prenom+"</option>");
+                                    }
+                                    
+                                    }
+
+                                    if (data.enseignant.length > 1) {
+
+                                         $("select.Enseignant").append("<option id="+-1+">Tous les enseignants</option>");
+
+
+                                    }
+
+                                    if (data.enseignant.length == 0) {
+
+                                         //$("select.Enseignant").append("<option id='"+null+"'>Aucun enseignant effecté !!</option>");
+                                         $(".ens_absent").append("<i style='color: blue;'>( Aucun enseignant effecté pour l'année en cour veuillez affecter avant de programmer !!!! )</i>");
+                                    }
 
 
                                            $("select.heure").append("<option>"+data.ec[0].heure+"</option>");
@@ -721,7 +1225,7 @@ $(".UE").change(function(){
                         "json"
             );
 
-                    $("select.EC,select.UE,select.Enseignant").css("border-color","white");
+                    $("select.EC,select.UE,select.Enseignant").css("border","1px solid #ced4da");
             }
 
             else
@@ -744,9 +1248,29 @@ $(".UE").change(function(){
                                      $(".Enseignant option").remove();
                                      $(".heure option").remove();
 
-                                     for (var i = 0; data.enseignant.length - 1 >= i; i++) {
-                                            $("select.Enseignant").append("<option id="+data.enseignant[i].id_personnel+">"+ data.enseignant[i].nom_prenom+"</option>");
-                                     }
+                                     $(".ens_absent").html("<i style=''></i>");
+                                           for (var i = 0; data.enseignant.length - 1 >= i; i++) {
+
+                                    if (tableau_id_modif[aaa[3]][aaa[4]][10]==data.enseignant[i].id_personnel) {
+                                         $("select.Enseignant").append("<option selected id='"+data.enseignant[i].id_personnel+"'>"+data.enseignant[i].nom_prenom+"</option>");
+                                    }else {
+                                         $("select.Enseignant").append("<option id='"+data.enseignant[i].id_personnel+"'>"+data.enseignant[i].nom_prenom+"</option>");
+                                    }
+                                    
+                                    }
+
+                                    if (data.enseignant.length > 1) {
+
+                                         $("select.Enseignant").append("<option id="+-1+">Tous les enseignants</option>");
+
+
+                                    }
+
+                                    if (data.enseignant.length == 0) {
+
+                                         //$("select.Enseignant").append("<option id='"+null+"'>Aucun enseignant effecté !!</option>");
+                                         $(".ens_absent").append("<i style='color: blue;'>( Aucun enseignant effecté pour l'année en cour veuillez affecter avant de programmer !!!! )</i>");
+                                    }
 
                                      $("select.heure").append("<option>"+data.ec[0].heure+"</option>");
 
@@ -798,8 +1322,8 @@ $(".UE").change(function(){
      $("input[name=optradio]").change(
           function(){
                           $(".radio").css("border","none");
-                           $("select.EC,select.UE,select.Enseignant").css("border-color","white");
-                          if ($("input[name=optradio]:checked").val()=="BIBLIOTHEQUE"  || $("input[name=optradio]:checked").val()=="Congé" || $("input[name=optradio]:checked").val()=="INVESTISSEMENT HUMAIN" || $("input[name=optradio]:checked").val()=="Vider") {
+                           $("select.EC,select.UE,select.Enseignant").css("border","1px solid #ced4da");
+                          if ($("input[name=optradio]:checked").val()=="BIBLIOTHEQUE"  || $("input[name=optradio]:checked").val()=="Congé" || $("input[name=optradio]:checked").val()=="INVEST_HUMAIN" || $("input[name=optradio]:checked").val()=="Vider" || $("input[name=optradio]:checked").val()=="PROJET") {
 
                                   $("select.EC").attr("disabled","true");
                                   $("select.UE").attr("disabled","true");
@@ -821,7 +1345,6 @@ $(".UE").change(function(){
                                     $("input[name=optradio]:checked").val()=="TD"      || 
                                     $("input[name=optradio]:checked").val()=="CC"      ||
                                     $("input[name=optradio]:checked").val()=="SYNTHESE"|| 
-                                    $("input[name=optradio]:checked").val()=="PROJET"  ||
                                     $("input[name=optradio]:checked").val()=="RATRAPAGE"
                             ) {
                            
@@ -839,34 +1362,6 @@ $(".UE").change(function(){
 
                           }
 
-                     //   $(".evolution option").remove();
-
-                                         
-
-                                     /*for (var i =1; aaa[3] >=i ; i++) {
-
-                                                            
-                                          k=3; 
-                                          if (i==aaa[3]) {
-                                           k=aaa[4]-1;
-                                          }
-                                              for (var j =1; k >=j ; j++) {
-                                               
-                                                    if (tableau_valeurs[i][j]!=null) {
-                                                        if (tableau_id[i][j][3]==$("select.EC").children(".EC option:selected").attr('id')) {
-                                                            if (parseInt(tableau_id[i][j][4],10)!=0) {
-
-                                                                d=parseInt(tableau_id[i][j][4],10);
-                                                              }
-                                                                    
-                                              }
-                                                                              
-                                           }
-                                                                              
-                                   }
-                                 }
-                                                            
-                       $("select.evolution").append("<option>"+d+"</option>");*/
             
           });
 
@@ -888,8 +1383,12 @@ $(".UE").change(function(){
               $("input[name=optradio]:checked").val()!="Vider" && 
               $("input[name=optradio]:checked").val()!="PROJET" && 
               $("input[name=optradio]:checked").val()!="SYNTHESE" && 
-              $("input[name=optradio]:checked").val()!="INVESTISSEMENT HUMAIN" && 
-              $("input[name=optradio]:checked").val()!="RATRAPAGE") {
+              $("input[name=optradio]:checked").val()!="INVEST_HUMAIN" && 
+              $("input[name=optradio]:checked").val()!="RATRAPAGE"&&
+              $("select.EC").val()!=null
+              ) {
+
+       if ($("select.Enseignant").children(".Enseignant option:selected").attr('id')!=null) {
 
              $.ajax({
 
@@ -924,6 +1423,8 @@ $(".UE").change(function(){
                     alert("erreur de requetes d:!jyhqmh");
                   }
                 });
+
+           }
            }
 
 
@@ -931,7 +1432,7 @@ $(".UE").change(function(){
             mat=0;
             //alert($("input[name=optradio]:checked").val());
             val=$("select.EC").children(".EC option:selected").val();
-            $("select.EC,select.UE,select.Enseignant").css("border-color","white");
+            $("select.EC,select.UE,select.Enseignant").css("border","1px solid #ced4da");
             $(".radio").css("border","none");
             if ($("input[name=optradio]:checked").val()==null) {
                 $(".radio").css("border","1px solid red");
@@ -941,7 +1442,8 @@ $(".UE").change(function(){
                   if (val==null && ($("input[name=optradio]:checked").val()!="BIBLIOTHEQUE"  && 
                     $("input[name=optradio]:checked").val()!="Congé" && 
                     $("input[name=optradio]:checked").val()!="Vider" && 
-                    $("input[name=optradio]:checked").val()!="INVESTISSEMENT HUMAIN") ) {
+                    $("input[name=optradio]:checked").val()!="INVEST_HUMAIN"&& 
+                    $("input[name=optradio]:checked").val()!="PROJET") ) {
 
                     $("select.EC,select.UE,select.Enseignant").css("border-color","red");
                     if ($("input[name=optradio]:checked").val()=="TP"      || 
@@ -949,7 +1451,6 @@ $(".UE").change(function(){
                     $("input[name=optradio]:checked").val()=="TD"      || 
                     $("input[name=optradio]:checked").val()=="CC"      ||
                     $("input[name=optradio]:checked").val()=="SYNTHESE"|| 
-                    $("input[name=optradio]:checked").val()=="PROJET"  ||
                     $("input[name=optradio]:checked").val()=="RATRAPAGE"
                       ) {
                      $("select.Enseignant").css("border-color","white");
@@ -965,35 +1466,42 @@ $(".UE").change(function(){
 
                  debut=$debut;
                        
-                
-                if (tableau_valeurs_modif[num_jour][num_plage]!=null){
-                          mat=tableau_id_modif[num_jour][num_plage][3];
-                }
-                  val=$("select.evolution").children(".evolution option:selected").val();
-          
-
-
-                            if (val!=null) {
-
-                             Evolution=parseInt(val,10)+parseInt(nbh,10);
-                             //alert(Evolution);
-                        }
-
-                        else{                                                                
-                              if (tableau_valeurs_modif[num_jour][num_plage]!=null) {
-                                Evolution=tableau_valeurs_modif[num_jour][num_plage][4];
-                              }
-                              else{
-                                Evolution=0;
-                              }
-                          
-                        }
                   
                
 
+
+                   if (tableau_valeurs_modif[num_jour][num_plage]!=null){
+                      mat=tableau_id_modif[num_jour][num_plage][3];
+                   }
+            if ($("input[name=select_ev]:checked").val()!="manuel") {         
+                val=$("select.evolution").children(".evolution option:selected").val();
+ 
+
+                   if (val!=null) {
+
+                    Evolution=parseInt(val,10)+parseInt(nbh,10);
+                    //alert(Evolution);
+               }
+
+               else{                                                                
+                     if (tableau_valeurs_modif[num_jour][num_plage]!=null) {
+                       Evolution=tableau_valeurs_modif[num_jour][num_plage][4];
+                     }
+                     else{
+                       Evolution=0;
+                     }
+                 
+               }
+         
+         }
+            else{
+
+                Evolution=parseInt($("input.evolution").val(),10);
+            }
+
                          
               
-                if ( $("input[name=optradio]:checked").val()=="BIBLIOTHEQUE"  || $("input[name=optradio]:checked").val()=="Congé" || $("input[name=optradio]:checked").val()=="INVESTISSEMENT HUMAIN") {
+                if ( $("input[name=optradio]:checked").val()=="BIBLIOTHEQUE"  || $("input[name=optradio]:checked").val()=="PROJET"  || $("input[name=optradio]:checked").val()=="Congé" || $("input[name=optradio]:checked").val()=="INVEST_HUMAIN") {
 
                         Salle_id=$("select.Salle").children(".Salle option:selected").attr('id');
                         EC_id=null;
@@ -1005,6 +1513,8 @@ $(".UE").change(function(){
                         Enseignant2=0;
                         heure=0;
                         UE=0;
+                        groupe=0;
+                        heure_def=0;
 
 
                   }  
@@ -1021,11 +1531,49 @@ $(".UE").change(function(){
                         UE_id=$("select.UE").children(".UE option:selected").attr('id');
                         Salle=$("select.Salle").children(".Salle option:selected").val();
                         EC=$("select.EC").children(".EC option:selected").val();
-                        Enseignant1=$("select.Enseignant").children(".Enseignant option:selected").val();
+                        
+                        Enseignant1='';
+
+               if ($("select.Enseignant").children(".Enseignant option:selected").attr('id') == -1) {
+                
+                for (var i = 0 ; $("select.Enseignant").length >= i; i++) {
+
+                    
+                    if ($("select.Enseignant").children(".Enseignant option:eq("+i+")").attr('id')!=-1) {
+                       if (i==0) {
+                            Enseignant1+=$("select.Enseignant").children(".Enseignant option:eq("+i+")").val();
+                        }
+                        else{
+
+                            Enseignant1+= " / "+$("select.Enseignant").children(".Enseignant option:eq("+i+")").val();
+
+                        }
+                     }
+                }
+             }
+             else{
+
+               Enseignant1=$("select.Enseignant").children(".Enseignant option:selected").val();
+
+
+             }
+
                         Enseignant2=$("select.Enseignant").children(".Enseignant option:eq(1)").val();
                         heure=$("select.heure").children(".heure option:selected").val();
                         UE=$("select.UE").children(".UE option:selected").val();
+                        groupe=$("select.groupe").children(".groupe option:selected").val();
 
+                        if($("input[name=select_ev]:checked").val()=="manuel" && $("input.heure").val()!=''){
+
+                //alert($("input.heure").val());
+                heure_def=$("input.heure").val();
+
+               }
+               else{
+
+                    //alert(0);
+                heure_def=0;
+                   }
                     
                   }
                   else{
@@ -1036,10 +1584,49 @@ $(".UE").change(function(){
                         Evolution=0;
                         Salle=$("select.Salle").children(".Salle option:selected").val();
                         EC=$("select.EC").children(".EC option:selected").val();
-                        Enseignant1=$("select.Enseignant").children(".Enseignant option:selected").val();
+                        
+                        Enseignant1='';
+
+               if ($("select.Enseignant").children(".Enseignant option:selected").attr('id') == -1) {
+                
+                for (var i = 0 ; $("select.Enseignant").length >= i; i++) {
+
+                    
+                    if ($("select.Enseignant").children(".Enseignant option:eq("+i+")").attr('id')!=-1) {
+                       if (i==0) {
+                            Enseignant1+=$("select.Enseignant").children(".Enseignant option:eq("+i+")").val();
+                        }
+                        else{
+
+                            Enseignant1+= " / "+$("select.Enseignant").children(".Enseignant option:eq("+i+")").val();
+
+                        }
+                     }
+                }
+             }
+             else{
+
+               Enseignant1=$("select.Enseignant").children(".Enseignant option:selected").val();
+
+
+             }
+
                         Enseignant2=$("select.Enseignant").children(".Enseignant option:eq(1)").val();
                         heure=$("select.heure").children(".heure option:selected").val();
                         UE=$("select.UE").children(".UE option:selected").val();
+                        groupe=$("select.groupe").children(".groupe option:selected").val();
+                        
+                        if($("input[name=select_ev]:checked").val()=="manuel" && $("input.heure").val()!=''){
+
+                //alert($("input.heure").val());
+                heure_def=$("input.heure").val();
+
+               }
+               else{
+
+                    //alert(0);
+                heure_def=0;
+                   }
                   }
 
                 }
@@ -1047,6 +1634,17 @@ $(".UE").change(function(){
 
                         //alert(Evolution);  
                      if ( $("input[name=optradio]:checked").val()!="Vider"  ) {
+
+                      if ($("select.Enseignant").children(".Enseignant option:selected").attr('id')
+                !=-1) {
+                            id_e=$("select.Enseignant").children(".Enseignant option:selected").attr('id')
+
+              }
+              else{
+                id_e=-1;
+              }
+              
+
                        tableau_id_modif[num_jour][num_plage]=[
                             tableau_id_jour_modif[num_jour-1],
                             tableau_d_modif[num_plage-1][3],
@@ -1055,8 +1653,25 @@ $(".UE").change(function(){
                             Evolution,
                             UE_id,
                             $("input[name=optradio]:checked").val(),
-                            tableau_d_modif[0][4]
+                            tableau_d_modif[0][4],
+                            groupe,
+                            heure_def,
+                            id_e
                             ];
+
+                            /*alert([
+                            tableau_id_jour_modif[num_jour-1],
+                            tableau_d_modif[num_plage-1][3],
+                            Salle_id,
+                            EC_id,
+                            Evolution,
+                            UE_id,
+                            $("input[name=optradio]:checked").val(),
+                            tableau_d_modif[0][4],
+                            groupe,
+                            heure_def,
+                            id_e
+                            ]);*/
 
                             tableau_valeurs_modif[num_jour][num_plage]=[
                             tableau_id_jour_modif[num_jour-1],
@@ -1068,7 +1683,9 @@ $(".UE").change(function(){
                             Enseignant2,
                             heure,
                             UE,
-                            $("input[name=optradio]:checked").val()
+                            $("input[name=optradio]:checked").val(),
+                            groupe,
+                            heure_def
                             ];
 
 
@@ -1129,9 +1746,28 @@ $(".UE").change(function(){
 
 });
  $("#enreg_modif").click(function(){
-alert(tableau_id_modif);
+//alert(tableau_id_modif);
 
-                  $.ajax({
+        
+              
+if($("input[name=select_num_sem]:checked").val()=="manuel" && $("input.semaine_modif").val()==''){
+    swal('','Dans le cas ou le numéro de la semaine est manuel , Le Champ Semaine ne doit pas etre vide','warning');
+}
+else{
+
+//alert("zz");
+    if ($("input[name=select_num_sem]:checked").val()=="manuel") {
+
+        tableau_semaine[0]=parseInt($("input.semaine_modif").val(),10);
+    }
+    else{
+
+         tableau_semaine[0]=$("select.semaine_modif").children(".semaine_modif option:selected").val();
+    }
+    
+    //alert(tableau_semaine[0]);
+         //alert(tableau_semaine);
+            $.ajax({
 
                                     
                     url: base_url + "enregistrement/modif_emploi" ,
@@ -1150,8 +1786,8 @@ alert(tableau_id_modif);
                       alert("erreur de requetes ");
                     }
                   });
+        }
 
-              
 
 
       });
